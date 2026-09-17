@@ -301,6 +301,7 @@ textarea, input[type="text"]{
   border-radius:8px; padding:9px 10px; font-size:15px; width:100%; font-family:inherit;
 }
 textarea{ resize:vertical; }
+#loreField, #equipementField{ resize:none; overflow:hidden; }
 [data-editmode-input]:disabled{ opacity:.6; }
 
 .merit-row{ display:flex; align-items:center; justify-content:space-between; border:1px solid var(--line); border-radius:8px; background:var(--panel-2); padding:9px 12px; margin-bottom:6px; }
@@ -1000,6 +1001,11 @@ function importStateFromFile(file){
 }
 
 /* ---------------- helpers ---------------- */
+function autoGrow(el){
+  if(!el) return;
+  el.style.height = "auto";
+  el.style.height = el.scrollHeight + "px";
+}
 function disciplinePointsFor(key){ return state.disciplinePoints[key] || 0; }
 
 function isPowerUnlockedByAmalgame(power){
@@ -1491,11 +1497,13 @@ function renderIdentity(){
 
   const lore = document.getElementById("loreField");
   lore.value = state.lore;
-  lore.oninput = (e)=>{ state.lore = e.target.value; saveState(); };
+  lore.oninput = (e)=>{ state.lore = e.target.value; saveState(); autoGrow(e.target); };
+  autoGrow(lore);
 
   const equip = document.getElementById("equipementField");
   equip.value = state.equipement;
-  equip.oninput = (e)=>{ state.equipement = e.target.value; saveState(); };
+  equip.oninput = (e)=>{ state.equipement = e.target.value; saveState(); autoGrow(e.target); };
+  autoGrow(equip);
 
   if(state.portraitCustom){
     document.getElementById("portrait2Img").src = state.portraitCustom;
