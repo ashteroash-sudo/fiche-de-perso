@@ -81,6 +81,10 @@ button{ font-family:inherit; }
 /* ---- vitals ---- */
 .vital-row{ margin-bottom:18px; }
 .vital-row:last-child{ margin-bottom:0; }
+.impaired-note{
+  margin-top:8px; font-size:13.5px; color:var(--gold); font-weight:600;
+  border:1px solid var(--gold-soft); border-radius:6px; padding:5px 9px; display:inline-block;
+}
 .vital-label{
   display:flex; align-items:center; justify-content:space-between;
   font-size:16px; text-transform:none; color:var(--text-dim); margin-bottom:8px;
@@ -105,6 +109,8 @@ button{ font-family:inherit; }
 .hp-box[data-state="aggravated"]{ border-color:var(--void); background:var(--void); }
 .hp-box[data-state="aggravated"]::after{ content:"✕"; color:var(--ink); }
 .hp-box[data-state="filled"]{ border-color:var(--gold); background:var(--gold); }
+.hp-box[data-state="stained"]{ border-color:#8a4f6e; background:#4a2438; }
+.hp-box[data-state="stained"]::after{ content:"●"; color:#c98fb0; font-size:13px; }
 
 /* pip rows (soif / volonte) */
 .pip-row{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
@@ -245,9 +251,12 @@ label.field-label{ display:block; font-size:15px; color:var(--text-dim); margin-
 
 .vitals-card .vitals-row{ display:flex; gap:26px; flex-wrap:wrap; align-items:flex-start; }
 .vitals-card .vcol{ flex:1; min-width:170px; }
-.vitals-card .vcol .vlabel{ font-family:"Cinzel",serif; font-weight:600; font-size:19px; letter-spacing:.03em; margin-bottom:10px; }
+.vitals-card .vcol.vcol-wide{ flex:1.7; min-width:280px; }
+.vitals-card .vcol .vlabel{ font-family:"Cinzel",serif; font-weight:600; font-size:19px; letter-spacing:.03em; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
 .vitals-card .hp-track{ gap:6px; }
 .vitals-card .hp-box{ width:40px; height:40px; }
+#humanityTrack.hp-track{ gap:5px; }
+#humanityTrack .hp-box{ width:34px; height:34px; }
 @media (max-width:760px){ .vitals-card .vitals-row{ flex-direction:column; } }
 
 .left-col{ display:flex; flex-direction:column; min-height:0; }
@@ -349,6 +358,7 @@ textarea{ resize:vertical; }
       <div class="vlabel">Santé</div>
       <div class="vital-label"><span>Piste de dégâts</span><span class="val" id="hpSummary"></span></div>
       <div class="hp-track" id="hpTrack"></div>
+      <div class="impaired-note" id="hpWarning" style="display:none;">⚠ Affaibli — −2 dés sur les jets physiques</div>
     </div>
 
     <div class="vcol">
@@ -364,29 +374,32 @@ textarea{ resize:vertical; }
     </div>
 
     <div class="vcol">
-      <div class="vlabel">Volonté</div>
-      <div class="pip-row">
-        <div class="stepper">
-          <button class="step-btn" id="willMinus">−</button>
-          <span class="val" id="willVal">5 / 5</span>
-          <button class="step-btn" id="willPlus">+</button>
-        </div>
-        <button class="info" id="willInfo" title="Rappel">i</button>
-      </div>
-      <div class="pips" id="willPips" style="margin-top:8px;"></div>
+      <div class="vlabel">Volonté <button class="info" id="willInfo" title="Rappel">i</button></div>
+      <div class="vital-label"><span>Piste de dégâts</span><span class="val" id="willSummary"></span></div>
+      <div class="hp-track" id="willTrack"></div>
+      <div class="impaired-note" id="willWarning" style="display:none;">⚠ Affaibli — −2 dés sur les jets sociaux/mentaux</div>
       <div class="hint" id="willReminder" style="display:none;">
-        1 point dépensé = relance de 3 dés ordinaires. Sert aussi à résister frénésie / Domination / Présence. Plus de points = état affaibli (−2 dés social/mental).
+        1 point disponible = relance de 3 dés ordinaires. Sert aussi à résister frénésie / Domination / Présence. Plus de points disponibles = état affaibli (−2 dés social/mental).
       </div>
     </div>
 
-    <div class="vcol">
-      <div class="vlabel">Humanité</div>
-      <div class="humanity-chip">
-        <span>Score : <b id="humanityVal">7</b> / 10</span>
-        <button class="pencil" id="humanityEdit">✎</button>
+    <div class="vcol vcol-wide">
+      <div class="vlabel">Humanité <button class="info" id="humanityInfo" title="Rappel">i</button></div>
+      <div class="vital-label"><span>Score</span><span class="val" id="humanitySummary"></span></div>
+      <div class="hp-track" id="humanityTrack"></div>
+      <div class="impaired-note" id="humanityWarning" style="display:none;">⚠ Affaibli — −2 dés à tous les jets</div>
+      <div class="field" data-editmode-only style="display:none; margin-top:8px; margin-bottom:0;">
+        <label class="field-label">Corriger le score (0-10)</label>
+        <input type="text" inputmode="numeric" id="humanityScoreInput" style="max-width:80px;" data-editmode-input>
+      </div>
+      <div class="hint" id="humanityReminder" style="display:none;">
+        <b>Obtention des Flétrissures :</b> en violant un Principe de la chronique, en dégradant ou détruisant une Attache, ou en commettant des actes de cruauté inhumains.<br><br>
+        <b>Règle du Remords :</b> à la fin de la partie, lance un nombre de dés égal aux cases blanches libres sur ta jauge d'Humanité (minimum 1 dé) — au moins une réussite (6+) efface les Flétrissures sans perte d'Humanité, un échec fait perdre 1 point d'Humanité avant de les effacer.<br><br>
+        <b>Dégénérescence (Affaibli) :</b> si les Flétrissures dépassent le nombre de cases libres, le vampire devient Affaibli (−2 dés à tous ses jets), subit 1 dégât de Volonté aggravé par Flétrissure en trop, et ne peut plus violer intentionnellement de Principe de la chronique.<br><br>
+        <b>Résister à la frénésie :</b> lance Volonté + 1/3 de ton score d'Humanité (arrondi à l'inférieur) contre une difficulté fixée par le Conteur.
       </div>
       <div class="hint" data-editmode-only style="display:none;">
-        Modifiable en édition seulement.
+        Cases pleines (score) modifiables en édition seulement. Les cases vides restent cochables à tout moment pour noter une Flétrissure.
       </div>
     </div>
   </div>
@@ -429,19 +442,6 @@ textarea{ resize:vertical; }
       </div>
     </div>
 
-    <div class="card" data-editmode-only style="display:none;">
-      <h2>Clan &amp; disciplines</h2>
-      <div class="field">
-        <label class="field-label">Clan</label>
-        <select id="clanSelect"></select>
-      </div>
-      <div class="field">
-        <label class="field-label">Discipline hors-clan (secours)</label>
-        <select id="offClanSelect"></select>
-      </div>
-      <div class="hint">Changer de clan reconstruit la liste des 3 disciplines ci-contre.</div>
-    </div>
-
   </div>
 
   <!-- RIGHT COLUMN : disciplines / pouvoirs -->
@@ -468,6 +468,20 @@ textarea{ resize:vertical; }
         <input type="file" id="portraitUpload" accept="image/*">
         <div class="hint">Reste en local dans ton navigateur pour cette démo — la version finale le sauvegardera avec la fiche.</div>
       </div>
+
+      <div class="card" data-editmode-only style="display:none; margin-bottom:14px;">
+        <h2>Clan &amp; disciplines</h2>
+        <div class="field">
+          <label class="field-label">Clan</label>
+          <select id="clanSelect"></select>
+        </div>
+        <div class="field">
+          <label class="field-label">Discipline hors-clan (secours)</label>
+          <select id="offClanSelect"></select>
+        </div>
+        <div class="hint">Changer de clan reconstruit la liste des 3 disciplines de l'onglet Principal.</div>
+      </div>
+
       <div class="card">
         <h2>Identité</h2>
         <div class="field">
@@ -845,8 +859,9 @@ let state = {
   openPowers:{},        // powerId -> true (expanded)
   hp:{max:7, boxes:Array(7).fill("empty")},
   hunger:1,
-  will:{current:5,max:5},
+  will:{max:5, boxes:Array(5).fill("empty")},
   humanity:7,
+  stains:{},            // index (1-10) -> true, uniquement sur les cases au-delà du score
   selectedTraits:{},
   rouseNote:false,
   bloodPotency:2, // défini sur l'onglet 2 (Personnage), utilisé par le calculateur de dés
@@ -875,8 +890,9 @@ function loadState(){
   // Réparation défensive : si une forme de données ne correspond plus à ce que le code attend
   // (ex : après un changement de structure), on la réinitialise plutôt que de planter tout le rendu.
   if(!state.hp || !Array.isArray(state.hp.boxes)) state.hp = {max:7, boxes:Array(7).fill("empty")};
-  if(!state.will || typeof state.will.current !== "number") state.will = {current:5,max:5};
+  if(!state.will || !Array.isArray(state.will.boxes)) state.will = {max:5, boxes:Array(5).fill("empty")};
   if(typeof state.humanity !== "number") state.humanity = 7;
+  if(!state.stains || typeof state.stains !== "object") state.stains = {};
   if(!state.acquired || typeof state.acquired !== "object") state.acquired = {};
   if(!state.disciplinePoints || typeof state.disciplinePoints !== "object") state.disciplinePoints = {};
   if(!state.selectedTraits || typeof state.selectedTraits !== "object") state.selectedTraits = {};
@@ -973,6 +989,8 @@ function renderHP(){
   const sup = state.hp.boxes.filter(s=>s==="superficial").length;
   const agg = state.hp.boxes.filter(s=>s==="aggravated").length;
   document.getElementById("hpSummary").textContent = sup+" superf. · "+agg+" aggravé";
+  const hpEmpty = state.hp.boxes.filter(s=>s==="empty").length;
+  document.getElementById("hpWarning").style.display = hpEmpty===0 ? "inline-block" : "none";
 }
 
 function renderHunger(){
@@ -1008,18 +1026,26 @@ function renderPortrait(){
 }
 
 function renderWill(){
-  document.getElementById("willVal").textContent = state.will.current+" / "+state.will.max;
-  const pips = document.getElementById("willPips");
-  pips.innerHTML = "";
-  for(let i=1;i<=state.will.max;i++){
-    const p = document.createElement("span");
-    p.className = "pip";
-    p.style.cursor = "default";
-    p.setAttribute("data-filled", i<=state.will.current);
-    pips.appendChild(p);
-  }
-  document.getElementById("willMinus").onclick = ()=>{ state.will.current = Math.max(0,state.will.current-1); render(); };
-  document.getElementById("willPlus").onclick  = ()=>{ state.will.current = Math.min(state.will.max,state.will.current+1); render(); };
+  const track = document.getElementById("willTrack");
+  track.innerHTML = "";
+  state.will.boxes.forEach((s,i)=>{
+    const b = document.createElement("button");
+    b.className = "hp-box";
+    b.setAttribute("data-state", s);
+    b.setAttribute("aria-label", "Case de volonté "+(i+1)+" : "+s);
+    b.onclick = ()=>{
+      const order = ["empty","superficial","aggravated"];
+      const idx = order.indexOf(state.will.boxes[i]);
+      state.will.boxes[i] = order[(idx+1)%order.length];
+      render();
+    };
+    track.appendChild(b);
+  });
+  const sup = state.will.boxes.filter(s=>s==="superficial").length;
+  const agg = state.will.boxes.filter(s=>s==="aggravated").length;
+  document.getElementById("willSummary").textContent = sup+" superf. · "+agg+" aggravé";
+  const willEmpty = state.will.boxes.filter(s=>s==="empty").length;
+  document.getElementById("willWarning").style.display = willEmpty===0 ? "inline-block" : "none";
   document.getElementById("willInfo").onclick = ()=>{
     const el = document.getElementById("willReminder");
     el.style.display = el.style.display==="none" ? "block" : "none";
@@ -1027,11 +1053,44 @@ function renderWill(){
 }
 
 function renderHumanity(){
-  document.getElementById("humanityVal").textContent = state.humanity;
-  document.getElementById("humanityEdit").onclick = ()=>{
-    if(!state.editMode) return;
-    const v = prompt("Nouveau score d'Humanité (0-10) :", state.humanity);
-    if(v!==null && !isNaN(v)){ state.humanity = Math.max(0,Math.min(10,parseInt(v,10))); render(); }
+  const track = document.getElementById("humanityTrack");
+  track.innerHTML = "";
+  let freeEmpty = 0;
+  let stainCount = 0;
+  for(let i=1;i<=10;i++){
+    const b = document.createElement("button");
+    b.className = "hp-box";
+    if(i<=state.humanity){
+      b.setAttribute("data-state","filled");
+      b.setAttribute("aria-label","Case d'humanité "+i+" (score, non modifiable — utilise le champ ci-dessous)");
+      b.disabled = true;
+    } else if(state.stains[i]){
+      stainCount++;
+      b.setAttribute("data-state","stained");
+      b.setAttribute("aria-label","Case d'humanité "+i+" (flétrissure)");
+      b.onclick = ()=>{ delete state.stains[i]; render(); };
+    } else {
+      freeEmpty++;
+      b.setAttribute("data-state","empty");
+      b.setAttribute("aria-label","Case d'humanité "+i+" (vide — clique pour noter une flétrissure)");
+      b.onclick = ()=>{ state.stains[i] = true; render(); };
+    }
+    track.appendChild(b);
+  }
+  document.getElementById("humanitySummary").textContent = state.humanity+" / 10"+(stainCount>0 ? " · "+stainCount+" flétrissure"+(stainCount>1?"s":"") : "");
+  document.getElementById("humanityWarning").style.display = (freeEmpty===0) ? "inline-block" : "none";
+
+  const scoreInput = document.getElementById("humanityScoreInput");
+  scoreInput.value = state.humanity;
+  scoreInput.oninput = (e)=>{
+    const v = e.target.value.replace(/[^0-9]/g,"");
+    state.humanity = v==="" ? 0 : Math.max(0,Math.min(10,parseInt(v,10)));
+    render();
+  };
+
+  document.getElementById("humanityInfo").onclick = ()=>{
+    const el = document.getElementById("humanityReminder");
+    el.style.display = el.style.display==="none" ? "block" : "none";
   };
 }
 
@@ -1314,7 +1373,12 @@ function renderDisciplines(){
 
     area.appendChild(card);
   });
-}function renderIdentity(){
+}
+function autosize(el){
+  el.style.height = "auto";
+  el.style.height = el.scrollHeight + "px";
+}
+function renderIdentity(){
   const nameInput = document.getElementById("charName");
   nameInput.value = state.charName;
   nameInput.oninput = (e)=>{ state.charName = e.target.value; saveState(); };
