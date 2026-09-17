@@ -57,6 +57,14 @@ button{ font-family:inherit; }
 .edit-toggle[data-active="true"]{ border-color:var(--gold); background:var(--panel-2); }
 .edit-toggle .dot{ width:9px; height:9px; border-radius:50%; background:var(--text-dim); }
 .edit-toggle[data-active="true"] .dot{ background:var(--gold); }
+.io-buttons{ display:flex; gap:8px; }
+.io-btn{
+  display:flex; align-items:center; gap:6px;
+  background:var(--panel); border:1px solid var(--line); color:var(--text);
+  padding:10px 16px; border-radius:999px; cursor:pointer;
+  font-size:15px; font-weight:500;
+}
+.io-btn:hover{ border-color:var(--gold); }
 .icon{ width:16px; height:16px; flex:none; }
 
 /* ---- layout ---- */
@@ -343,6 +351,11 @@ textarea{ resize:vertical; }
     <button class="tab-btn" data-tab="1">Principal</button>
     <button class="tab-btn" data-tab="2">Personnage</button>
     <button class="tab-btn" data-tab="3">Extra</button>
+  </div>
+  <div class="io-buttons">
+    <button class="io-btn" id="exportBtn" title="Télécharger la fiche en fichier .json">💾 Exporter</button>
+    <button class="io-btn" id="importBtn" title="Recharger une fiche depuis un fichier .json">📂 Importer</button>
+    <input type="file" id="importFile" accept="application/json,.json" style="display:none;">
   </div>
   <button class="edit-toggle" id="editToggle" data-active="true">
     <span class="dot"></span>
@@ -914,14 +927,10 @@ let state = {
   equipement:""
 };
 
-function loadState(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw){ state = Object.assign(state, JSON.parse(raw)); }
-  }catch(e){ /* pas de stockage dispo, on continue avec l'état par défaut */ }
-
+function sanitizeState(){
   // Réparation défensive : si une forme de données ne correspond plus à ce que le code attend
-  // (ex : après un changement de structure), on la réinitialise plutôt que de planter tout le rendu.
+  // (ex : après un changement de structure, ou un fichier importé incomplet), on la réinitialise
+  // plutôt que de planter tout le rendu.
   if(!state.hp || !Array.isArray(state.hp.boxes)) state.hp = {max:7, boxes:Array(7).fill("empty")};
   if(!state.will || !Array.isArray(state.will.boxes)) state.will = {max:5, boxes:Array(5).fill("empty")};
   if(typeof state.humanity !== "number") state.humanity = 7;
@@ -934,8 +943,60 @@ function loadState(){
   if(!Array.isArray(state.ancrages)) state.ancrages = [];
   if(!Array.isArray(state.relations)) state.relations = [];
 }
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){ state = Object.assign(state, JSON.parse(raw)); }
+  }catch(e){ /* pas de stockage dispo, on continue avec l'état par défaut */ }
+  sanitizeState();
+}
 function saveState(){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+}
+
+/* ---------------- export / import fiche (fichier .json) ---------------- */
+function slugify(txt){
+  return (txt||"fiche").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^a-zA-Z0-9]+/g,"_").replace(/^_+|_+$/g,"").toLowerCase() || "fiche";
+}
+function exportState(){
+  try{
+    const data = JSON.stringify(state, null, 2);
+    const blob = new Blob([data], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const d = new Date();
+    const stamp = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "vtm_"+slugify(state.charName)+"_"+stamp+".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  }catch(e){
+    alert("Échec de l'export : "+e.message);
+  }
+}
+function importStateFromFile(file){
+  const reader = new FileReader();
+  reader.onload = function(){
+    let parsed;
+    try{
+      parsed = JSON.parse(reader.result);
+    }catch(e){
+      alert("Ce fichier n'est pas un JSON valide.");
+      return;
+    }
+    if(!confirm("Importer cette fiche va remplacer la fiche actuellement affichée. Continuer ?")){
+      return;
+    }
+    state = Object.assign({}, state, parsed);
+    sanitizeState();
+    saveState();
+    render();
+  };
+  reader.onerror = function(){ alert("Impossible de lire le fichier."); };
+  reader.readAsText(file);
 }
 
 /* ---------------- helpers ---------------- */
@@ -1719,6 +1780,13 @@ function renderRelationMap(){
 /* ---------------- boot ---------------- */
 loadState();
 document.getElementById("editToggle").onclick = ()=>{ state.editMode = !state.editMode; render(); };
+document.getElementById("exportBtn").onclick = exportState;
+document.getElementById("importBtn").onclick = ()=>{ document.getElementById("importFile").click(); };
+document.getElementById("importFile").onchange = (e)=>{
+  const file = e.target.files && e.target.files[0];
+  if(file) importStateFromFile(file);
+  e.target.value = ""; // permet de réimporter le même fichier plus tard si besoin
+};
 render();
 </script>
 </body>
