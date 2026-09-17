@@ -256,6 +256,44 @@ label.field-label{ display:block; font-size:15px; color:var(--text-dim); margin-
 .dice-breakdown .hunger-die{ display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; background:var(--gold); border:2px solid var(--gold); color:var(--ink); margin:0 2px; font-size:11px; font-weight:700; vertical-align:middle; }
 .dice-rouse{ display:flex; align-items:center; gap:8px; font-size:14.5px; color:var(--text-dim); cursor:pointer; }
 .dice-rouse input{ width:18px; height:18px; }
+.dice-roll-btn{
+  align-self:flex-start; margin-top:2px;
+  background:var(--panel-2); border:1px solid var(--gold); color:var(--gold);
+  padding:8px 18px; border-radius:999px; cursor:pointer; font-size:15px; font-weight:600;
+}
+.dice-roll-btn:disabled{ opacity:.5; cursor:default; }
+.dice-roll-area{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; min-height:40px; perspective:400px; }
+.die{
+  width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+  font-size:16px; font-weight:700; border:2px solid #8a8578; background:#e8e3d5; color:#1c2b3a;
+  transition:transform .15s ease-out;
+}
+.die.hunger{ border-color:#7a231d; background:#b3352c; color:#f4ecd8; }
+.die.rolling{ animation:die-spin .12s linear infinite; }
+.die.settled{ animation:die-land .28s ease-out; }
+.die.crit-face{ border-color:#e0b84a; box-shadow:0 0 8px 2px rgba(224,184,74,.75), 0 0 0 2px #e0b84a inset; }
+@keyframes die-spin{ 0%{transform:rotateX(0deg) rotateY(0deg);} 100%{transform:rotateX(180deg) rotateY(180deg);} }
+@keyframes die-land{ 0%{transform:scale(1.3);} 100%{transform:scale(1);} }
+.dice-roll-result{ font-size:16px; font-weight:600; margin-top:2px; }
+.dice-roll-result.crit{ color:var(--gold); }
+.dice-roll-result.fail{ color:var(--text-dim); }
+.dice-roll-result.bestial{ color:#c0392b; }
+.pool-mod{ display:flex; align-items:center; gap:6px; margin-top:6px; }
+.pool-mod-btn{
+  width:22px; height:22px; border-radius:50%; border:1px solid var(--line); background:var(--panel-2);
+  color:var(--text); font-size:14px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+#poolModVal{ font-size:13px; color:var(--text-dim); min-width:24px; text-align:center; }
+.pool-mod-hint{ font-size:12.5px; color:var(--text-dim); }
+.rouse-die-area{ display:flex; align-items:center; gap:8px; min-height:38px; }
+.rouse-die-label{ font-size:13px; font-weight:600; }
+.rouse-die-label.fail{ color:#c0392b; }
+.rouse-die-label.ok{ color:var(--text-dim); }
+.rouse-mini-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:24px; height:24px; border-radius:50%; border:1px solid var(--line);
+  background:var(--panel-2); cursor:pointer; font-size:13px; margin-left:6px; vertical-align:middle;
+}
 
 .vitals-card .vitals-row{ display:flex; gap:26px; flex-wrap:wrap; align-items:flex-start; }
 .vitals-card .vcol{ flex:1; min-width:170px; }
@@ -376,7 +414,7 @@ textarea{ resize:vertical; }
     </div>
 
     <div class="vcol">
-      <div class="vlabel">Soif</div>
+      <div class="vlabel">Soif <button class="rouse-mini-btn" id="hungerRouseBtn" title="Jet de Réveil (réveil ou soin)">🎲</button></div>
       <div class="pip-row">
         <div class="stepper">
           <button class="step-btn" id="hungerMinus">−</button>
@@ -385,6 +423,7 @@ textarea{ resize:vertical; }
         </div>
       </div>
       <div class="pips" id="hungerPips" style="margin-top:8px;"></div>
+      <div class="rouse-die-area" id="hungerRouseDieArea" style="margin-top:6px;"></div>
     </div>
 
     <div class="vcol">
@@ -435,14 +474,26 @@ textarea{ resize:vertical; }
         <div class="dice-pool-badge">
           <span class="n" id="dicePoolNum">–</span>
           <span class="lbl">dés</span>
+          <div class="pool-mod">
+            <button class="pool-mod-btn" id="poolModMinus">−</button>
+            <span id="poolModVal">+0</span>
+            <button class="pool-mod-btn" id="poolModPlus">+</button>
+          </div>
         </div>
         <div class="dice-body">
           <div class="dice-chips" id="diceChips"></div>
           <div class="dice-breakdown" id="diceResult"></div>
+          <div class="pool-mod-hint">⚠️ Vérifiez vos atouts/handicaps — ajustez manuellement avec +/- si besoin</div>
           <label class="dice-rouse">
             <input type="checkbox" id="rouseCheck">
             <span id="rouseLabel">Ajouter un dé via l'Exaltation ?</span>
           </label>
+          <div style="display:flex; align-items:center; gap:14px;">
+            <button class="dice-roll-btn" id="rollDiceBtn">🎲 Lancer</button>
+            <div class="rouse-die-area" id="rouseDieArea"></div>
+          </div>
+          <div class="dice-roll-area" id="diceRollArea"></div>
+          <div class="dice-roll-result" id="diceRollResult"></div>
         </div>
       </div>
     </div>
@@ -912,6 +963,7 @@ let state = {
   selectedTraits:{},
   rouseNote:false,
   bloodPotency:2, // défini sur l'onglet 2 (Personnage), utilisé par le calculateur de dés
+  poolModifier:0, // ajustement manuel (+/-) pour atouts/handicaps non automatisés
   traitValues:{},
   currentTab:"1",
   charName:"",
@@ -935,6 +987,7 @@ function sanitizeState(){
   if(!state.hp || !Array.isArray(state.hp.boxes)) state.hp = {max:7, boxes:Array(7).fill("empty")};
   if(!state.will || !Array.isArray(state.will.boxes)) state.will = {max:5, boxes:Array(5).fill("empty")};
   if(typeof state.humanity !== "number") state.humanity = 7;
+  if(typeof state.poolModifier !== "number") state.poolModifier = 0;
   if(!state.stains || typeof state.stains !== "object") state.stains = {};
   if(!state.acquired || typeof state.acquired !== "object") state.acquired = {};
   if(!state.disciplinePoints || typeof state.disciplinePoints !== "object") state.disciplinePoints = {};
@@ -1107,6 +1160,7 @@ function renderHunger(){
   }
   document.getElementById("hungerMinus").onclick = ()=>{ state.hunger = Math.max(0,state.hunger-1); render(); };
   document.getElementById("hungerPlus").onclick  = ()=>{ state.hunger = Math.min(5,state.hunger+1); render(); };
+  document.getElementById("hungerRouseBtn").onclick = ()=> rollRouseCheck("hungerRouseDieArea");
 }
 
 function renderPortrait(){
@@ -1307,12 +1361,50 @@ function renderAttrsSkills(){
   });
 }
 
+function computeDicePool(){
+  const entries = Object.entries(state.selectedTraits);
+  let pool = entries.reduce((s,[,v])=>s+v, 0);
+  if(state.rouseNote) pool += state.bloodPotency;
+  pool = Math.max(0, pool + (state.poolModifier||0));
+  const hungerDice = Math.min(state.hunger, pool);
+  const normalDice = pool - hungerDice;
+  return {entries, pool, normalDice, hungerDice};
+}
+
+/* Faces des dés : crâne (1), vide (2-5), ankh (6-9), double ankh doré (10) */
+function ankhSVG(color, size){
+  return "<svg viewBox='0 0 24 24' width='"+size+"' height='"+size+"'>"
+    + "<circle cx='12' cy='6.5' r='4.2' fill='none' stroke='"+color+"' stroke-width='2.4'/>"
+    + "<line x1='12' y1='10.7' x2='12' y2='22' stroke='"+color+"' stroke-width='2.4'/>"
+    + "<line x1='6.5' y1='15' x2='17.5' y2='15' stroke='"+color+"' stroke-width='2.4'/>"
+    + "</svg>";
+}
+function skullSVG(ink, holeColor){
+  return "<svg viewBox='0 0 24 24' width='20' height='20'>"
+    + "<path d='M12 2a7 7 0 0 0-7 7c0 3 1.4 5.1 3 6.4V18h1.6v-1.1c.8.25 1.6.35 2.4.35s1.6-.1 2.4-.35V18H16v-2.6c1.6-1.3 3-3.4 3-6.4a7 7 0 0 0-7-7z' fill='"+ink+"'/>"
+    + "<circle cx='9.2' cy='9.2' r='1.3' fill='"+holeColor+"'/>"
+    + "<circle cx='14.8' cy='9.2' r='1.3' fill='"+holeColor+"'/>"
+    + "<rect x='9.6' y='14.4' width='1' height='2.6' fill='"+holeColor+"'/>"
+    + "<rect x='11.5' y='14.6' width='1' height='2.6' fill='"+holeColor+"'/>"
+    + "<rect x='13.4' y='14.4' width='1' height='2.6' fill='"+holeColor+"'/>"
+    + "</svg>";
+}
+function dieFaceMarkup(val, isHunger){
+  const ink = isHunger ? "#f4ecd8" : "#1c2b3a";
+  const hole = isHunger ? "#b3352c" : "#e8e3d5";
+  if(val===1) return skullSVG(ink, hole);
+  if(val>=2 && val<=5) return "";
+  if(val>=6 && val<=9) return ankhSVG(ink, 20);
+  return "<span style='display:flex; gap:1px;'>"+ankhSVG("#e0b84a",13)+ankhSVG("#e0b84a",13)+"</span>";
+}
+
 function renderDiceCalc(){
   const chipsWrap = document.getElementById("diceChips");
   const resultEl = document.getElementById("diceResult");
   const poolNumEl = document.getElementById("dicePoolNum");
+  const rollBtn = document.getElementById("rollDiceBtn");
   chipsWrap.innerHTML = "";
-  const entries = Object.entries(state.selectedTraits);
+  const {entries, pool, normalDice, hungerDice} = computeDicePool();
   entries.forEach(([label,val])=>{
     const chip = document.createElement("span"); chip.className="dice-chip";
     chip.innerHTML = "<span>"+label+" ("+val+")</span>";
@@ -1329,11 +1421,8 @@ function renderDiceCalc(){
     chipsWrap.innerHTML = "<span class='dice-empty'>Touche un attribut puis une compétence…</span>";
     resultEl.innerHTML = "";
     poolNumEl.textContent = "–";
+    rollBtn.disabled = true;
   } else {
-    let pool = entries.reduce((s,[,v])=>s+v, 0);
-    if(state.rouseNote) pool += state.bloodPotency;
-    const hungerDice = Math.min(state.hunger, pool);
-    const normalDice = pool - hungerDice;
     poolNumEl.textContent = pool;
     let html = normalDice+" normal"+(normalDice>1?"aux":"")+" ";
     for(let i=0;i<normalDice;i++) html += "<span class='pool-die'></span>";
@@ -1343,9 +1432,110 @@ function renderDiceCalc(){
     }
     if(state.rouseNote) html += " <span style='color:var(--text-dim)'>(dont +"+state.bloodPotency+" par Exaltation)</span>";
     resultEl.innerHTML = html;
+    rollBtn.disabled = false;
   }
+
+  document.getElementById("poolModVal").textContent = (state.poolModifier>0?"+":"")+state.poolModifier;
+  document.getElementById("poolModMinus").onclick = ()=>{ state.poolModifier -= 1; render(); };
+  document.getElementById("poolModPlus").onclick = ()=>{ state.poolModifier += 1; render(); };
+
   document.getElementById("rouseCheck").checked = !!state.rouseNote;
-  document.getElementById("rouseCheck").onchange = (e)=>{ state.rouseNote = e.target.checked; render(); };
+  document.getElementById("rouseCheck").onchange = (e)=>{
+    const turningOn = e.target.checked && !state.rouseNote;
+    state.rouseNote = e.target.checked;
+    render();
+    if(turningOn) rollRouseCheck();
+  };
+  rollBtn.onclick = rollDice;
+}
+
+/* Jet de Réveil séparé (1d10) : échec (1-5) augmente la Soif de 1. Affiché à part, disparaît seul.
+   areaId permet de le déclencher depuis plusieurs endroits (case Exaltation, ou bouton dans le bandeau Soif). */
+function rollRouseCheck(areaId){
+  const area = document.getElementById(areaId || "rouseDieArea");
+  area.innerHTML = "";
+  const el = document.createElement("div");
+  el.className = "die rolling";
+  area.appendChild(el);
+  const final = 1 + Math.floor(Math.random()*10);
+  const spin = setInterval(()=>{ el.textContent = 1 + Math.floor(Math.random()*10); }, 60);
+  setTimeout(()=>{
+    clearInterval(spin);
+    el.textContent = final;
+    el.classList.remove("rolling");
+    el.classList.add("settled");
+    const label = document.createElement("span");
+    if(final <= 5){
+      state.hunger = Math.min(5, state.hunger + 1);
+      renderHunger();
+      label.className = "rouse-die-label fail";
+      label.textContent = "+1 Soif";
+    } else {
+      label.className = "rouse-die-label ok";
+      label.textContent = "Réveil réussi";
+    }
+    area.appendChild(label);
+    setTimeout(()=>{ area.innerHTML = ""; }, 1800);
+  }, 650);
+}
+
+function rollDice(){
+  const {normalDice, hungerDice} = computeDicePool();
+  const total = normalDice + hungerDice;
+  if(total===0) return;
+  const area = document.getElementById("diceRollArea");
+  const resultLine = document.getElementById("diceRollResult");
+  area.innerHTML = "";
+  resultLine.textContent = "";
+  resultLine.className = "dice-roll-result";
+
+  const dieEls = [];
+  const finals = [];
+  for(let i=0;i<total;i++){
+    const isHunger = i >= normalDice;
+    const el = document.createElement("div");
+    el.className = "die rolling" + (isHunger ? " hunger" : "");
+    el.textContent = "?";
+    area.appendChild(el);
+    dieEls.push(el);
+    finals.push(1 + Math.floor(Math.random()*10));
+  }
+
+  let settledCount = 0;
+  dieEls.forEach((el, i)=>{
+    const isHunger = i >= normalDice;
+    const spin = setInterval(()=>{ el.textContent = 1 + Math.floor(Math.random()*10); }, 60);
+    const delay = 500 + i*120 + Math.floor(Math.random()*200);
+    setTimeout(()=>{
+      clearInterval(spin);
+      const val = finals[i];
+      el.innerHTML = dieFaceMarkup(val, isHunger);
+      el.classList.remove("rolling");
+      el.classList.add("settled");
+      if(val===10) el.classList.add("crit-face");
+      settledCount++;
+      if(settledCount===total) finishRoll(finals, normalDice, hungerDice, resultLine);
+    }, delay);
+  });
+}
+
+function finishRoll(values, normalDice, hungerDice, resultLine){
+  const hungerValues = values.slice(normalDice);
+  const count10 = values.filter(v=>v===10).length;
+  const count69 = values.filter(v=>v>=6 && v<=9).length;
+  const pairs = Math.floor(count10/2);
+  let successes = count69 + count10 + pairs*2;
+  const isCritical = pairs>=1;
+  const isMessy = isCritical && hungerValues.includes(10);
+  const isBestial = successes===0 && hungerValues.includes(1);
+
+  let text, cls;
+  if(isBestial){ text = "0 succès — Échec Bestial !"; cls = "bestial"; }
+  else if(successes===0){ text = "Échec"; cls = "fail"; }
+  else if(isCritical){ text = successes+" succès — Critique"+(isMessy ? " (Réussite Sale)" : " !"); cls = "crit"; }
+  else { text = successes+" succès"; cls = ""; }
+  resultLine.textContent = text;
+  resultLine.className = "dice-roll-result" + (cls ? " "+cls : "");
 }
 
 function renderDisciplines(){
