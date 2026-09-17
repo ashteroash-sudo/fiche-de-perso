@@ -289,11 +289,13 @@ label.field-label{ display:block; font-size:15px; color:var(--text-dim); margin-
 .rouse-die-label{ font-size:13px; font-weight:600; }
 .rouse-die-label.fail{ color:#c0392b; }
 .rouse-die-label.ok{ color:var(--text-dim); }
+.rouse-mini-row{ display:flex; align-items:center; gap:6px; margin-top:2px; }
 .rouse-mini-btn{
   display:inline-flex; align-items:center; justify-content:center;
   width:24px; height:24px; border-radius:50%; border:1px solid var(--line);
-  background:var(--panel-2); cursor:pointer; font-size:13px; margin-left:6px; vertical-align:middle;
+  background:var(--panel-2); cursor:pointer; font-size:13px; vertical-align:middle;
 }
+.rouse-mini-caption{ font-size:12px; color:var(--text-dim); }
 
 .vitals-card .vitals-row{ display:flex; gap:26px; flex-wrap:wrap; align-items:flex-start; }
 .vitals-card .vcol{ flex:1; min-width:170px; }
@@ -414,7 +416,11 @@ textarea{ resize:vertical; }
     </div>
 
     <div class="vcol">
-      <div class="vlabel">Soif <button class="rouse-mini-btn" id="hungerRouseBtn" title="Jet de Réveil (réveil ou soin)">🎲</button></div>
+      <div class="vlabel">Soif</div>
+      <div class="rouse-mini-row">
+        <button class="rouse-mini-btn" id="hungerRouseBtn">🎲</button>
+        <span class="rouse-mini-caption">Jet de Réveil</span>
+      </div>
       <div class="pip-row">
         <div class="stepper">
           <button class="step-btn" id="hungerMinus">−</button>
@@ -1461,9 +1467,10 @@ function rollRouseCheck(areaId){
   const spin = setInterval(()=>{ el.textContent = 1 + Math.floor(Math.random()*10); }, 60);
   setTimeout(()=>{
     clearInterval(spin);
-    el.textContent = final;
+    el.innerHTML = dieFaceMarkup(final, false);
     el.classList.remove("rolling");
     el.classList.add("settled");
+    if(final===10) el.classList.add("crit-face");
     const label = document.createElement("span");
     if(final <= 5){
       state.hunger = Math.min(5, state.hunger + 1);
