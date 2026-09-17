@@ -618,104 +618,137 @@ const STORAGE_KEY = "vtm-fiche-v5-prototype-demo-v4";
 /* ---------------- data ---------------- */
 const DISCIPLINES = {
   animalisme: { label:"Animalisme", powers:[
-    {id:"an1a", niveau:1, nom:"Lier le famulus", cout:"Gratuit (1 test à la création)", jet:"Aucun — lie un animal comme serviteur"},
-    {id:"an1b", niveau:1, nom:"Sentir la bête", cout:"Gratuit", jet:"Résolution + Animalisme, en opposition contre Sang-froid + Subterfuge"},
-    {id:"an2", niveau:2, nom:"Murmures sauvages", cout:"1 test d'Exaltation", jet:"Manipulation + Animalisme (difficulté variable)"},
-    {id:"an2b", niveau:2, nom:"Messager animal", cout:"1 test d'Exaltation par nuit", jet:"Résolution + Rue/Survie", amalgame:{discipline:"auspex", niveau:1}, prereq:"an1a"},
-    {id:"an3a", niveau:3, nom:"Apaiser la bête", cout:"1 test d'Exaltation", jet:"Charisme + Animalisme, en opposition contre Vigueur + Résolution"},
-    {id:"an4a", niveau:4, nom:"Soumission de l'esprit", cout:"1 test d'Exaltation", jet:"Manipulation + Animalisme (difficulté 4 pour posséder l'animal)"},
-    {id:"an4b", niveau:4, nom:"Infection belligérante", cout:"1+ test d'Exaltation", jet:"Sang-froid + Animalisme"},
-    {id:"an5a", niveau:5, nom:"Domination animale", cout:"2 tests d'Exaltation", jet:"Charisme + Animalisme (difficulté 3 à 5)"},
-    {id:"an5b", niveau:5, nom:"Démence belligérante", cout:"1 test d'Exaltation", jet:"Manipulation + Animalisme (difficulté 3)"}
+    {id:"an1a", niveau:1, nom:"Lier le famulus", cout:"Gratuit (1 test à la création)", jet:"Aucun — lie un animal comme serviteur", description:"Forme un lien mystique indéfectible avec un animal qui devient un espion et serviteur dévoué."},
+    {id:"an1b", niveau:1, nom:"Sentir la bête", cout:"Gratuit", jet:"Résolution + Animalisme, en opposition contre Sang-froid + Subterfuge", description:"Perçoit le niveau de Soif, la Bête et la nature surnaturelle d'un individu à proximité."},
+    {id:"an2", niveau:2, nom:"Murmures sauvages", cout:"1 test d'Exaltation", jet:"Manipulation + Animalisme (difficulté variable)", description:"Etablit une communication télépathique et empathique bidirectionnelle avec n'importe quel animal."},
+    {id:"an2b", niveau:2, nom:"Messager animal", cout:"1 test d'Exaltation par nuit", jet:"Résolution + Rue/Survie", description:"Rassemble des animaux locaux pour transmettre un message vocal ou porter un pli discrets."},
+    {id:"an3a", niveau:3, nom:"Apaiser la bête", cout:"1 test d'Exaltation", jet:"Charisme + Animalisme, en opposition contre Vigueur + Résolution", description:"Calme immédiatement la Bête d'un sujet pour stopper la frénésie ou plonger un mortel dans la léthargie."},
+    {id:"an4a", niveau:4, nom:"Soumission de l'esprit", cout:"1 test d'Exaltation", jet:"Manipulation + Animalisme (difficulté 4 pour posséder l'animal)", description:"Projecte son esprit dans le corps d'un animal pour le contrôler directement comme son propre corps."},
+    {id:"an4b", niveau:4, nom:"Infection belligérante", cout:"1+ test d'Exaltation", jet:"Sang-froid + Animalisme", description:"Transmet une rage incontrôlable aux animaux environnants pour les pousser à attaquer en meute."},
+    {id:"an5a", niveau:5, nom:"Domination animale", cout:"2 tests d'Exaltation", jet:"Charisme + Animalisme (difficulté 3 à 5)", description:"Donne des ordres complexes à un groupe d'animaux qui l'exécutent avec une fidélité absolue."},
+    {id:"an5b", niveau:5, nom:"Démence belligérante", cout:"1 test d'Exaltation", jet:"Manipulation + Animalisme (difficulté 3)", description:"Transfère sa propre Bête dans le corps d'une cible pour la plonger immédiatement en frénésie furieuse."}
   ]},
   forceAme: { label:"Force d'âme", powers:[
-    {id:"fa1a", niveau:1, nom:"Résilience", cout:"Gratuit", jet:"Aucun — augmente la jauge de Santé de son score"},
-    {id:"fa1b", niveau:1, nom:"Esprit résolu", cout:"Gratuit", jet:"Aucun — ajoute Force d'âme contre coercition/influence"},
-    {id:"fa2a", niveau:2, nom:"Robustesse", cout:"1 test d'Exaltation", jet:"Aucun — soustrait Force d'âme aux dégâts superficiels"},
-    {id:"fa2b", niveau:2, nom:"Vitae revigorante", cout:"Gratuit", jet:"Aucun — la vitae guérit 3 dégâts aggravés chez les vivants"},
-    {id:"fa2c", niveau:2, nom:"Bêtes endurantes", cout:"1 test d'Exaltation", jet:"Vigueur + Animalisme (difficulté 3)", amalgame:{discipline:"animalisme", niveau:1}},
-    {id:"fa3b", niveau:3, nom:"Fortifier le masque intérieur", cout:"Gratuit", jet:"Aucun — protège l'esprit/aura contre intrusions psychiques (contre Auspex notamment, aucun amalgame requis)"},
-    {id:"fa3c", niveau:2, nom:"Soigner le corps", cout:"1 test d'Exaltation", jet:"Intelligence + Force d'âme", amalgame:{discipline:"auspex", niveau:1}},
-    {id:"fa4", niveau:4, nom:"Armure de l'esprit", cout:"1 test d'Exaltation", jet:"Aucun — convertit/annule les dégâts de Volonté"},
-    {id:"fa5a", niveau:5, nom:"Chair de marbre", cout:"2 tests d'Exaltation", jet:"Aucun — ignore la 1ère source de dégâts physiques par tour"},
-    {id:"fa5b", niveau:5, nom:"Immunité absolue", cout:"2 tests d'Exaltation", jet:"Aucun — immunité temporaire périls/poisons"}
+    {id:"fa1a", niveau:1, nom:"Résilience", cout:"Gratuit", jet:"Aucun — augmente la jauge de Santé de son score", description:"Augmente la jauge de Santé maximale du vampire d'un nombre de cases égal à son score de Force d'âme."},
+    {id:"fa1b", niveau:1, nom:"Esprit résolu", cout:"Gratuit", jet:"Aucun — ajoute Force d'âme contre coercition/influence", description:"Ajoute la valeur de Force d'âme en dés supplémentaires contre toute tentative de coercition ou d'influence mentale."},
+    {id:"fa2a", niveau:2, nom:"Robustesse", cout:"1 test d'Exaltation", jet:"Aucun — soustrait Force d'âme aux dégâts superficiels", description:"Soustrait la valeur de Force d'âme de tous les dégâts physiques superficieux subis à chaque attaque."},
+    {id:"fa2b", niveau:2, nom:"Vitae revigorante", cout:"Gratuit", jet:"Aucun — la vitae guérit 3 dégâts aggravés chez les vivants", description:"Rend la Vitae du vampire capable de guérir d'horribles blessures aggravées chez les mortels."},
+    {id:"fa2c", niveau:2, nom:"Bêtes endurantes", cout:"1 test d'Exaltation", jet:"Vigueur + Animalisme (difficulté 3)", description:"Confère la résistance et les bonus de santé de la Force d'âme à son famulus ou à un groupe d'animaux."},
+    {id:"fa3b", niveau:3, nom:"Fortifier le masque intérieur", cout:"Gratuit", jet:"Aucun — protège l'esprit/aura contre intrusions psychiques (contre Auspex notamment, aucun amalgame requis)", description:"Immunise le vampire et ses sujets soumis contre les tentatives d'intrusion ou de contrôle mental d'autrui."},
+    {id:"fa3c", niveau:3, nom:"Soigner le corps", cout:"1 test d'Exaltation", jet:"Intelligence + Force d'âme", description:"Utilise sa propre Vitae et Force d'âme pour soigner instantanément les blessures physiques d'un tiers."},
+    {id:"fa4", niveau:4, nom:"Armure de l'esprit", cout:"1 test d'Exaltation", jet:"Aucun — convertit/annule les dégâts de Volonté", description:"Transforme les dégâts aggravés de Volonté subis en dégâts superficieux ou absorbe les attaques psychiques."},
+    {id:"fa5a", niveau:5, nom:"Chair de marbre", cout:"2 tests d'Exaltation", jet:"Aucun — ignore la 1ère source de dégâts physiques par tour", description:"Rend la peau aussi dure que la pierre, ignorant la première source de dégâts physiques subie à chaque tour."},
+    {id:"fa5b", niveau:5, nom:"Immunité absolue", cout:"2 tests d'Exaltation", jet:"Aucun — immunité temporaire périls/poisons", description:"Rend le corps temporairement invincible face aux poisons, à l'électricité, à la pression et aux éléments."}
   ]},
   proteisme: { label:"Protéisme", powers:[
-    {id:"pr1a", niveau:1, nom:"Yeux de la bête", cout:"Gratuit", jet:"Aucun — vision nocturne parfaite"},
-    {id:"pr1b", niveau:1, nom:"Poids plume", cout:"Gratuit", jet:"Aucun — amortit les chutes"},
-    {id:"pr2a", niveau:2, nom:"Armes bestiales", cout:"1 test d'Exaltation", jet:"Aucun — griffes/crocs, dégâts accrus"},
-    {id:"pr2b", niveau:2, nom:"Vicissitude", cout:"1 test d'Exaltation", jet:"Résolution + Protéisme", amalgame:{discipline:"domination", niveau:2}},
-    {id:"pr3a", niveau:3, nom:"Fusion avec la terre", cout:"1 test d'Exaltation", jet:"Aucun — s'enfonce dans le sol pour dormir/se cacher"},
-    {id:"pr3b", niveau:3, nom:"Changement de forme", cout:"1 test d'Exaltation", jet:"Aucun — métamorphose en animal de taille similaire"},
-    {id:"pr3c", niveau:3, nom:"Sculpture de chair", cout:"1 test d'Exaltation", jet:"Résolution + Protéisme, en opposition contre Vigueur + Résolution", amalgame:{discipline:"domination", niveau:2}, prereq:"pr2b"},
-    {id:"pr4a", niveau:4, nom:"Métamorphose", cout:"1 test d'Exaltation", jet:"Aucun — formes monstrueuses ou grands animaux"},
-    {id:"pr4b", niveau:4, nom:"Forme d'horreur", cout:"1 test d'Exaltation", jet:"Vigueur + Protéisme"},
-    {id:"pr5a", niveau:5, nom:"Forme de brume", cout:"1 à 3 tests d'Exaltation", jet:"Aucun — nuage de brume insensible aux armes"},
-    {id:"pr5b", niveau:5, nom:"Conscience du domaine", cout:"2 tests d'Exaltation", jet:"Aucun — fusionne avec le sol, perçoit tout le domaine"}
+    {id:"pr1a", niveau:1, nom:"Yeux de la bête", cout:"Gratuit", jet:"Aucun — vision nocturne parfaite", description:"Fait luire ses yeux d'une lueur rouge permettant de voir dans le noir le plus complet."},
+    {id:"pr1b", niveau:1, nom:"Poids plume", cout:"Gratuit", jet:"Aucun — amortit les chutes", description:"Réduit la masse du corps pour flotter doucement, ignorer les dégâts de chute et marcher sur l'eau ou la neige."},
+    {id:"pr2a", niveau:2, nom:"Armes bestiales", cout:"1 test d'Exaltation", jet:"Aucun — griffes/crocs, dégâts accrus", description:"Fait pousser des griffes ou des crocs infligeant +2 dégâts de Bagarre superficiels non divisés aux vampires et aggravés aux mortels."},
+    {id:"pr2b", niveau:2, nom:"Vicissitude", cout:"1 test d'Exaltation", jet:"Résolution + Protéisme", description:"Permet de sculpter et déformer sa propre chair, sa peau et ses ossements pour modifier son apparence ou créer des armes."},
+    {id:"pr3a", niveau:3, nom:"Fusion avec la terre", cout:"1 test d'Exaltation", jet:"Aucun — s'enfonce dans le sol pour dormir/se cacher", description:"S'enfonce mystiquement dans la terre naturelle pour se mettre à l'abri du soleil et des prédateurs."},
+    {id:"pr3b", niveau:3, nom:"Changement de forme", cout:"1 test d'Exaltation", jet:"Aucun — métamorphose en animal de taille similaire", description:"Métamorphose le vampire en un animal de taille similaire (comme un loup ou un corbeau)."},
+    {id:"pr3c", niveau:3, nom:"Sculpture de chair", cout:"1 test d'Exaltation", jet:"Résolution + Protéisme, en opposition contre Vigueur + Résolution", description:"Altère et façonne la chair, les muscles et la structure osseuse d'un sujet (allié ou ennemi)."},
+    {id:"pr4a", niveau:4, nom:"Métamorphose", cout:"1 test d'Exaltation", jet:"Aucun — formes monstrueuses ou grands animaux", description:"Permet de se transformer en prédateur monstrueux ou en créatures d'extérieurs impressionnantes."},
+    {id:"pr4b", niveau:4, nom:"Forme d'horreur", cout:"1 test d'Exaltation", jet:"Vigueur + Protéisme", description:"Transforme le corps en une monstrueuse chimère physique augmentant considérablement la puissance de combat."},
+    {id:"pr5a", niveau:5, nom:"Forme de brume", cout:"1 à 3 tests d'Exaltation", jet:"Aucun — nuage de brume insensible aux armes", description:"Se transforme en un nuage de brume immatériel insensible aux armes physiques et capable d'entrer par les fissures."},
+    {id:"pr5b", niveau:5, nom:"Conscience du domaine", cout:"2 tests d'Exaltation", jet:"Aucun — fusionne avec le sol, perçoit tout le domaine", description:"S'enfonce dans le sol pour ressentir instantanément tout événement et présence sur l'ensemble de son territoire."}
   ]},
   auspex: { label:"Auspex", powers:[
-    {id:"au1a", niveau:1, nom:"Sens accrus", cout:"Gratuit", jet:"Astuce + Auspex ou Résolution + Auspex"},
-    {id:"au1b", niveau:1, nom:"Sentir l'invisible", cout:"Gratuit", jet:"Astuce + Auspex, en opposition contre Astuce + Occultation"},
-    {id:"au2a", niveau:2, nom:"Prémonition", cout:"Gratuit / 1 test d'Exaltation", jet:"Résolution + Auspex"},
-    {id:"au2b", niveau:2, nom:"Panacée", cout:"1 test d'Exaltation", jet:"Sang-froid + Auspex (difficulté 2)", amalgame:{discipline:"forceAme", niveau:1}},
-    {id:"au2c", niveau:2, nom:"Partage des sens", cout:"1 test d'Exaltation", jet:"Résolution + Auspex (difficulté 3)"},
-    {id:"au3a", niveau:3, nom:"Lecture d'aura / Siphon d'âme", cout:"1 test d'Exaltation", jet:"Intelligence + Auspex, en opposition contre Sang-froid + Subterfuge"},
-    {id:"au3b", niveau:3, nom:"Psychométrie", cout:"1 test d'Exaltation", jet:"Intelligence + Auspex (difficulté variable)"},
-    {id:"au3c", niveau:3, nom:"Fissure de l'âme", cout:"1 test d'Exaltation", jet:"Intelligence + Auspex, en opposition contre Sang-froid/Vigueur + Subterfuge", amalgame:{discipline:"neant", niveau:1}},
-    {id:"au4", niveau:4, nom:"Télépathie", cout:"1 test d'Exaltation", jet:"Résolution + Auspex, en opposition contre Résolution + Subterfuge"},
-    {id:"au5a", niveau:5, nom:"Clairvoyance", cout:"2 tests d'Exaltation", jet:"Résolution + Auspex"},
-    {id:"au5b", niveau:5, nom:"Possession", cout:"2 tests d'Exaltation", jet:"Résolution + Auspex, en opposition contre Résolution + Intelligence", amalgame:{discipline:"domination", niveau:3}}
+    {id:"au1a", niveau:1, nom:"Sens accrus", cout:"Gratuit", jet:"Astuce + Auspex ou Résolution + Auspex", description:"Multiplie la sensibilité de tous les sens pour percevoir des détails imperceptibles à l'œil humain."},
+    {id:"au1b", niveau:1, nom:"Sentir l'invisible", cout:"Gratuit", jet:"Astuce + Auspex, en opposition contre Astuce + Occultation", description:"Détecte la présence de créatures ou d'objets dissimulés sous Occultation ou métamorphosés."},
+    {id:"au2a", niveau:2, nom:"Prémonition", cout:"Gratuit / 1 test d'Exaltation", jet:"Résolution + Auspex", description:"Reçoit des flashes divinatoires du futur proche pour anticiper les dangers ou révéler des indices cachés."},
+    {id:"au2b", niveau:2, nom:"Panacée", cout:"1 test d'Exaltation", jet:"Sang-froid + Auspex (difficulté 2)", description:"Apaise le tourment mental et guérit les dégâts de Volonté d'un allié grâce à un contact apaisant."},
+    {id:"au2c", niveau:2, nom:"Partage des sens", cout:"1 test d'Exaltation", jet:"Résolution + Auspex (difficulté 3)", description:"Se branche sur la perception d'un sujet pour voir, entendre et ressentir tout ce qu'il vit en temps réel."},
+    {id:"au3a", niveau:3, nom:"Lecture d'aura / Siphon d'âme", cout:"1 test d'Exaltation", jet:"Intelligence + Auspex, en opposition contre Sang-froid + Subterfuge", description:"Lit les émotions et l'état de santé via l'aura de la cible, ou aspire son énergie psychique."},
+    {id:"au3b", niveau:3, nom:"Psychométrie", cout:"1 test d'Exaltation", jet:"Intelligence + Auspex (difficulté variable)", description:"Lit les empreintes émotionnelles et le passé d'un objet ou d'un lieu en le touchant."},
+    {id:"au3c", niveau:3, nom:"Fissure de l'âme", cout:"1 test d'Exaltation", jet:"Intelligence + Auspex, en opposition contre Sang-froid/Vigueur + Subterfuge", description:"Détecte les traumatismes, secrets et faiblesses psychologiques cachés d'un individu d'un simple regard."},
+    {id:"au4", niveau:4, nom:"Télépathie", cout:"1 test d'Exaltation", jet:"Résolution + Auspex, en opposition contre Résolution + Subterfuge", description:"Etablit une connexion mentale pour lire les pensées superficielles d'une cible ou converser en silence."},
+    {id:"au5a", niveau:5, nom:"Clairvoyance", cout:"2 tests d'Exaltation", jet:"Résolution + Auspex", description:"Étend ses sens mystiques pour observer et entendre à distance n'importe quel endroit d'un quartier."},
+    {id:"au5b", niveau:5, nom:"Possession", cout:"2 tests d'Exaltation", jet:"Résolution + Auspex, en opposition contre Résolution + Intelligence", description:"Projecte sa conscience dans le corps d'un mortel pour en prendre le contrôle total pendant qu'il dort."}
   ]},
   celerite: { label:"Célérité", powers:[
-    {id:"ce1a", niveau:1, nom:"Grâce féline", cout:"Gratuit", jet:"Aucun — équilibre parfait"},
-    {id:"ce1b", niveau:1, nom:"Réflexes éclair", cout:"Gratuit", jet:"Aucun — pas de malus à découvert contre armes à feu"},
-    {id:"ce2a", niveau:2, nom:"Rapidité", cout:"1 test d'Exaltation", jet:"Aucun — ajoute Célérité aux jets de Dextérité hors combat"},
-    {id:"ce2b", niveau:2, nom:"Tâches éclair", cout:"1 test d'Exaltation", jet:"Aucun — exécute une tâche longue en quelques secondes"},
-    {id:"ce3a", niveau:3, nom:"Fulgurance", cout:"1 test d'Exaltation", jet:"Dextérité + Athlétisme (terrain accidenté)"},
-    {id:"ce3b", niveau:3, nom:"Esquive des balles", cout:"1 test d'Exaltation", jet:"Aucun — ajoute Célérité à la défense à distance"},
-    {id:"ce4a", niveau:4, nom:"Tir infaillible", cout:"1 test d'Exaltation", jet:"Dextérité + Armes à feu (cible sans défense)", amalgame:{discipline:"auspex", niveau:2}},
-    {id:"ce4b", niveau:4, nom:"Frappe invisible", cout:"2 tests d'Exaltation", jet:"Dextérité + Célérité, en opposition contre Astuce + Vigilance"},
-    {id:"ce5a", niveau:5, nom:"Coup de grâce", cout:"1 test d'Exaltation", jet:"Force/Dextérité + Mêlée/Bagarre (cible sans défense)"},
-    {id:"ce5b", niveau:5, nom:"Flou artistique", cout:"1 test d'Exaltation par tour", jet:"Aucun — attaques inférieures à la Célérité échouent"}
+    {id:"ce1a", niveau:1, nom:"Grâce féline", cout:"Gratuit", jet:"Aucun — équilibre parfait", description:"Garantit un équilibre parfait en toutes circonstances, empêchant les chutes et permettant de marcher sur des surfaces infimes."},
+    {id:"ce1b", niveau:1, nom:"Réflexes éclair", cout:"Gratuit", jet:"Aucun — pas de malus à découvert contre armes à feu", description:"Garantit des réflexes ultrarapides annulant les malus de défense à découvert face aux armes à feu."},
+    {id:"ce2a", niveau:2, nom:"Rapidité", cout:"1 test d'Exaltation", jet:"Aucun — ajoute Célérité aux jets de Dextérité hors combat", description:"Booste les réflexes pour exécuter des mouvements d'une dextérité fulgurante hors combat."},
+    {id:"ce2b", niveau:2, nom:"Tâches éclair", cout:"1 test d'Exaltation", jet:"Aucun — exécute une tâche longue en quelques secondes", description:"Exécute une tâche physique complexe nécessitant des heures en quelques secondes seulement."},
+    {id:"ce3a", niveau:3, nom:"Fulgurance", cout:"1 test d'Exaltation", jet:"Dextérité + Athlétisme (terrain accidenté)", description:"Traverse une distance impressionnante en une fraction de seconde pour surprendre l'adversaire ou s'enfuir."},
+    {id:"ce3b", niveau:3, nom:"Esquive des balles", cout:"1 test d'Exaltation", jet:"Aucun — ajoute Célérité à la défense à distance", description:"Permet d'esquiver les tirs d'armes à feu avec la Célérité comme si c'étaient des attaques au CàC."},
+    {id:"ce4a", niveau:4, nom:"Tir infaillible", cout:"1 test d'Exaltation", jet:"Dextérité + Armes à feu (cible sans défense)", description:"Ralentit la perception du temps pour ajuster un tir parfait garantissant l'impact sans esquive."},
+    {id:"ce4b", niveau:4, nom:"Frappe invisible", cout:"2 tests d'Exaltation", jet:"Dextérité + Célérité, en opposition contre Astuce + Vigilance", description:"Se déplace à une vitesse imperceptible pour porter une attaque surprise dévastatrice sans riposte possible."},
+    {id:"ce5a", niveau:5, nom:"Coup de grâce", cout:"1 test d'Exaltation", jet:"Force/Dextérité + Mêlée/Bagarre (cible sans défense)", description:"Exécute une frappe à vitesse supersonique empêchant toute esquive ou parade de la victime."},
+    {id:"ce5b", niveau:5, nom:"Flou artistique", cout:"1 test d'Exaltation par tour", jet:"Aucun — attaques inférieures à la Célérité échouent", description:"Se déplace si rapidement que les attaques physiques directes échouent automatiquement si leur réserve est faible."}
   ]},
   presence: { label:"Présence", powers:[
-    {id:"pe1a", niveau:1, nom:"Révérence", cout:"Gratuit", jet:"Manipulation + Présence, en opposition contre Sang-froid + Intelligence"},
-    {id:"pe1b", niveau:1, nom:"Intimider", cout:"Gratuit", jet:"Aucun — ajoute Présence aux jets d'Intimidation"},
-    {id:"pe1c", niveau:1, nom:"Yeux du serpent", cout:"Gratuit", jet:"Charisme + Présence, en opposition contre Astuce + Sang-froid"},
-    {id:"pe2", niveau:2, nom:"Baiser persistant", cout:"1 test d'Exaltation", jet:"Charisme + Présence, en opposition contre Sang-froid + Résolution"},
-    {id:"pe3a", niveau:3, nom:"Envoûtement", cout:"1 test d'Exaltation", jet:"Manipulation + Présence, en opposition contre Sang-froid + Intelligence"},
-    {id:"pe3b", niveau:3, nom:"Voix impérieuse", cout:"Gratuit", jet:"Aucun — canalise Domination par la voix"},
-    {id:"pe4a", niveau:4, nom:"Convocation", cout:"1 test d'Exaltation", jet:"Manipulation + Présence, en opposition contre Sang-froid + Intelligence"},
-    {id:"pe4b", niveau:4, nom:"Présence architecturale", cout:"Gratuit", jet:"Idem pouvoir transmis via la structure d'un bâtiment"},
-    {id:"pe5a", niveau:5, nom:"Majesté", cout:"2 tests d'Exaltation", jet:"Sang-froid + Résolution, en opposition contre Charisme + Présence"},
-    {id:"pe5b", niveau:5, nom:"Magnétisme médiatique", cout:"1 test d'Exaltation", jet:"Idem pouvoir de base sur retransmissions directes"}
+    {id:"pe1a", niveau:1, nom:"Révérence", cout:"Gratuit", jet:"Manipulation + Présence, en opposition contre Sang-froid + Intelligence", description:"Subjugue les observateurs en inspirant un respect et une fascination spontanés."},
+    {id:"pe1b", niveau:1, nom:"Intimider", cout:"Gratuit", jet:"Aucun — ajoute Présence aux jets d'Intimidation", description:"Ajoute la valeur de Présence en bonus passif à tous les jets d'Intimidation et de contrainte sociale."},
+    {id:"pe1c", niveau:1, nom:"Yeux du serpent", cout:"Gratuit", jet:"Charisme + Présence, en opposition contre Astuce + Sang-froid", description:"Paralyse sur place une cible d'un simple regard captivant comme celui d'un prédateur."},
+    {id:"pe2", niveau:2, nom:"Baiser persistant", cout:"1 test d'Exaltation", jet:"Charisme + Présence, en opposition contre Sang-froid + Résolution", description:"Provoque un plaisir extatique lors de la morsure, rendant la victime dépendante et incapable de résister."},
+    {id:"pe3a", niveau:3, nom:"Envoûtement", cout:"1 test d'Exaltation", jet:"Manipulation + Présence, en opposition contre Sang-froid + Intelligence", description:"Rend la cible profondément fascinée et amoureuse du vampire, la poussant à vouloir lui plaire à tout prix."},
+    {id:"pe3b", niveau:3, nom:"Voix impérieuse", cout:"Gratuit", jet:"Aucun — canalise Domination par la voix", description:"Permet d'utiliser tous les pouvoirs de Domination par la voix seule sans nécessiter de contact visuel."},
+    {id:"pe4a", niveau:4, nom:"Convocation", cout:"1 test d'Exaltation", jet:"Manipulation + Présence, en opposition contre Sang-froid + Intelligence", description:"Attire irrésistiblement une personne connue vers le lieu où se trouve le vampire."},
+    {id:"pe4b", niveau:4, nom:"Présence architecturale", cout:"Gratuit", jet:"Idem pouvoir transmis via la structure d'un bâtiment", description:"Imprègne la structure d'un bâtiment entier de sa Présence pour affecter tous les occupants."},
+    {id:"pe5a", niveau:5, nom:"Majesté", cout:"2 tests d'Exaltation", jet:"Sang-froid + Résolution, en opposition contre Charisme + Présence", description:"Dégage un aura d'autorité sacrée si écrasante que personne ne peut attaquer ou contredire le vampire sans réussir un jet difficile."},
+    {id:"pe5b", niveau:5, nom:"Magnétisme médiatique", cout:"1 test d'Exaltation", jet:"Idem pouvoir de base sur retransmissions directes", description:"Propage les effets de Présence à travers des retransmissions vidéo en direct ou des enregistrements."}
   ]},
   domination: { label:"Domination", powers:[
-    {id:"do1a", niveau:1, nom:"Contrainte", cout:"Gratuit", jet:"Charisme + Domination, en opposition contre Intelligence + Résolution"},
-    {id:"do1b", niveau:1, nom:"Renforcement mental", cout:"Gratuit", jet:"Aucun — protège les soumis contre Domination d'autrui"},
-    {id:"do2a", niveau:2, nom:"Hypnose", cout:"1 test d'Exaltation", jet:"Manipulation + Domination, en opposition contre Intelligence + Résolution"},
-    {id:"do2b", niveau:2, nom:"Faveur du domitor", cout:"1 test d'Exaltation", jet:"Aucun — pénalise la désobéissance des liés au sang"},
-    {id:"do3a", niveau:3, nom:"Altération mémorielle", cout:"1 test d'Exaltation", jet:"Manipulation + Domination, en opposition contre Intelligence + Résolution"},
-    {id:"do3b", niveau:3, nom:"Indoctrination", cout:"1 test d'Exaltation", jet:"Manipulation + Domination, en opposition contre Sang-froid + Résolution"},
-    {id:"do4a", niveau:4, nom:"Rationalisation", cout:"1 test d'Exaltation", jet:"Manipulation + Domination, en opposition contre Intelligence + Résolution"},
-    {id:"do4b", niveau:4, nom:"Hypnose ancestrale", cout:"1 test d'Exaltation", jet:"Manipulation + Domination, en opposition contre Résolution + Occultisme"},
-    {id:"do5a", niveau:5, nom:"Décret ultime", cout:"Gratuit (coût d'Humanité possible)", jet:"Aucun — impose des ordres suicidaires"},
-    {id:"do5b", niveau:5, nom:"Manipulation des masses", cout:"1 test d'Exaltation", jet:"Idem pouvoir de base, étendu à la foule"}
+    {id:"do1a", niveau:1, nom:"Contrainte", cout:"Gratuit", jet:"Charisme + Domination, en opposition contre Intelligence + Résolution", description:"Impose un ordre verbal d'un seul mot que la cible doit exécuter immédiatement sans réfléchir."},
+    {id:"do1b", niveau:1, nom:"Renforcement mental", cout:"Gratuit", jet:"Aucun — protège les soumis contre Domination d'autrui", description:"Protège les sujets soumis contre les tentatives de contrôle mental venues de vampires rivaux."},
+    {id:"do2a", niveau:2, nom:"Hypnose", cout:"1 test d'Exaltation", jet:"Manipulation + Domination, en opposition contre Intelligence + Résolution", description:"Plonge la cible dans une transe hypnotique permettant d'implanter des suggestions ou d'effacer des souvenirs."},
+    {id:"do2b", niveau:2, nom:"Faveur du domitor", cout:"1 test d'Exaltation", jet:"Aucun — pénalise la désobéissance des liés au sang", description:"Pénalise la volonté de désobéir des sujets liés par le sang envers leur maître."},
+    {id:"do3a", niveau:3, nom:"Altération mémorielle", cout:"1 test d'Exaltation", jet:"Manipulation + Domination, en opposition contre Intelligence + Résolution", description:"Permet d'effacer ou d'altérer des souvenirs récents chez une cible pour protéger la Mascarade."},
+    {id:"do3b", niveau:3, nom:"Indoctrination", cout:"1 test d'Exaltation", jet:"Manipulation + Domination, en opposition contre Sang-froid + Résolution", description:"Réécrit durablement les loyautés et les valeurs d'un sujet sous Domination au fil de plusieurs sessions."},
+    {id:"do4a", niveau:4, nom:"Rationalisation", cout:"1 test d'Exaltation", jet:"Manipulation + Domination, en opposition contre Intelligence + Résolution", description:"Force la cible sous Domination à inventer des raisons logiques pour justifier ses actes absurdes."},
+    {id:"do4b", niveau:4, nom:"Hypnose ancestrale", cout:"1 test d'Exaltation", jet:"Manipulation + Domination, en opposition contre Résolution + Occultisme", description:"Soumet les descendants de sa lignée de sang à des ordres hypnotiques sans besoin de contact visuel."},
+    {id:"do5a", niveau:5, nom:"Décret ultime", cout:"Gratuit (coût d'Humanité possible)", jet:"Aucun — impose des ordres suicidaires", description:"Oblige une cible sous Domination à exécuter des ordres suicidaires ou détruisant ses convictions profondes."},
+    {id:"do5b", niveau:5, nom:"Manipulation des masses", cout:"1 test d'Exaltation", jet:"Idem pouvoir de base, étendu à la foule", description:"Étend les effets d'un pouvoir de Présence à toute une foule réunie au même endroit."}
   ]},
   sorcellerieSang: { label:"Sorcellerie du sang", powers:[
-    {id:"ss1a", niveau:1, nom:"Goût du sang", cout:"1 test d'Exaltation", jet:"Résolution + Sorcellerie du sang"},
-    {id:"ss1b", niveau:1, nom:"Éteindre le sang", cout:"1 test d'Exaltation", jet:"Résolution + Sorcellerie du sang, en opposition contre Vigueur + Sang-froid"},
-    {id:"ss2a", niveau:2, nom:"Vitae corrosive", cout:"1 test d'Exaltation", jet:"Aucun — dissout les objets inertes"},
-    {id:"ss2b", niveau:2, nom:"Malédiction du sang", cout:"1 test d'Exaltation", jet:"Intelligence + Sorcellerie du sang, en opposition contre Vigueur + Occultisme"},
-    {id:"ss3a", niveau:3, nom:"Toucher du scorpion", cout:"1 test d'Exaltation", jet:"Force + Sorcellerie du sang, en opposition contre Vigueur + Force d'âme"},
-    {id:"ss3b", niveau:3, nom:"Maturation du sang", cout:"1 test d'Exaltation", jet:"Intelligence + Sorcellerie du sang"},
-    {id:"ss4", niveau:4, nom:"Vol de vitae", cout:"1 test d'Exaltation", jet:"Résolution + Sorcellerie du sang, en opposition contre Sang-froid + Occultisme"},
-    {id:"ss5a", niveau:5, nom:"Caresse de Baal", cout:"1+ test d'Exaltation", jet:"Force + Sorcellerie du sang, en opposition contre Vigueur + Occultisme/Force d'âme"},
-    {id:"ss5b", niveau:5, nom:"Chaudron de sang", cout:"1 test d'Exaltation + 1 Flétrissure", jet:"Résolution + Sorcellerie du sang, en opposition contre Sang-froid + Occultisme/Force d'âme"}
+    {id:"ss1a", niveau:1, nom:"Goût du sang", cout:"1 test d'Exaltation", jet:"Résolution + Sorcellerie du sang", description:"Analyse une goutte de sang pour révéler l'âge, la génération, le clan et l'état de santé de son propriétaire."},
+    {id:"ss1b", niveau:1, nom:"Éteindre le sang", cout:"1 test d'Exaltation", jet:"Résolution + Sorcellerie du sang, en opposition contre Vigueur + Sang-froid", description:"Neutralise temporairement la Vitae d'un vampire ennemi en l'empêchant d'utiliser l'Exaltation."},
+    {id:"ss2a", niveau:2, nom:"Vitae corrosive", cout:"1 test d'Exaltation", jet:"Aucun — dissout les objets inertes", description:"Projecte une giclée de sang alchimique ultra-acide capable de fondre le métal, le verre et le béton."},
+    {id:"ss2b", niveau:2, nom:"Malédiction du sang", cout:"1 test d'Exaltation", jet:"Intelligence + Sorcellerie du sang, en opposition contre Vigueur + Occultisme", description:"Affaiblit le sang d'un autre vampire en augmentant le coût en Exaltation de toutes ses actions."},
+    {id:"ss3a", niveau:3, nom:"Toucher du scorpion", cout:"1 test d'Exaltation", jet:"Force + Sorcellerie du sang, en opposition contre Vigueur + Force d'âme", description:"Transforme sa Vitae en un venin corrosif infligeant des dégâts de faiblesse physique paralysante."},
+    {id:"ss3b", niveau:3, nom:"Maturation du sang", cout:"1 test d'Exaltation", jet:"Intelligence + Sorcellerie du sang", description:"Concentre sa Vitae pour augmenter temporairement sa puissance du sang et l'efficacité de ses disciplines."},
+    {id:"ss4", niveau:4, nom:"Vol de vitae", cout:"1 test d'Exaltation", jet:"Résolution + Sorcellerie du sang, en opposition contre Sang-froid + Occultisme", description:"Aspire mystiquement le sang d'une victime à distance sans contact physique direct."},
+    {id:"ss5a", niveau:5, nom:"Caresse de Baal", cout:"1+ test d'Exaltation", jet:"Force + Sorcellerie du sang, en opposition contre Vigueur + Occultisme/Force d'âme", description:"Enduit une arme de vitae empoisonnée infligeant des dégâts aggravés dévastateurs à chaque frappe."},
+    {id:"ss5b", niveau:5, nom:"Chaudron de sang", cout:"1 test d'Exaltation + 1 Flétrissure", jet:"Résolution + Sorcellerie du sang, en opposition contre Sang-froid + Occultisme/Force d'âme", description:"Fait bouillir le sang à l'intérieur du corps de la cible, infligeant d'horribles dégâts aggravés internes."}
   ]},
-  neant: { label:"Néant", powers:[] },
-  occultation: { label:"Occultation", powers:[] },
-  puissance: { label:"Puissance", powers:[] }
+  neant: { label:"Néant", powers:[
+    {id:"ne1a", niveau:1, nom:"Cape de ténèbres", cout:"1 test d'Exaltation", jet:"Aucun (+2 dés aux jets de Furtivité et d'Intimidation)", description:"S'enveloppe d'ombres pour se fondre dans l'obscurité et obtenir un bonus aux jets de Furtivité et d'Intimidation."},
+    {id:"ne1b", niveau:1, nom:"Regard des morts", cout:"Gratuit", jet:"Aucun (Permet de voir dans le noir total et de percevoir les fantômes)", description:"Permet de voir parfaitement dans l'obscurité totale et de détecter la présence des esprits et des fantômes."},
+    {id:"ne2a", niveau:2, nom:"Bras d'Ahriman", cout:"1 test d'Exaltation", jet:"Astuce + Néant (Invocation de tentacules ténébreux)", description:"Invoque des tentacules d'ombre sortant des ténèbres pour agripper, étouffer ou écraser les adversaires."},
+    {id:"ne2b", niveau:2, nom:"Ombre vivante", cout:"1 test d me Exaltation", jet:"Aucun (Anime son ombre pour déstabiliser ou espionner)", description:"Anime sa propre ombre pour terrifier, espionner discrètement ou créer une distraction."},
+    {id:"ne3a", niveau:3, nom:"Entraves des morts", cout:"1 test d'Exaltation", jet:"Résolution + Néant en opposition contre Volonté de l'esprit", description:"Invoque des mains spectrales sortant du sol pour paralyser et immobiliser une cible sur place."},
+    {id:"ne3b", niveau:3, nom:"Aura de décomposition", cout:"1 test d'Exaltation", jet:"Vigueur + Néant en opposition contre Vigueur + Médecine/Force d'âme", description:"Accélère la pourriture d'une cible vivante ou d'un objet, infligeant des dégâts de dépérissement rapides."},
+    {id:"ne3c", niveau:3, nom:"Malédiction de l'entropie", cout:"1 test d'Exaltation", jet:"Résolution + Néant en opposition contre Astuce + Occultisme", description:"Condamne une cible à une poisse noire et à des accidents physiques mortels dans les heures à venir."},
+    {id:"ne4a", niveau:4, nom:"Masque de l'ombre", cout:"1 test d'Exaltation", jet:"Intelligence + Néant en opposition contre Dextérité + Intelligence", description:"Couvre le visage ou le corps d'une obscurité vivante qui effraie les témoins et masque son identité."},
+    {id:"ne4b", niveau:4, nom:"Mangeur de passion", cout:"Gratuit", jet:"Résolution + Néant en opposition contre Résolution + Sang-froid (se nourrit des esprits)", description:"Permet au vampire de se nourrir de l'énergie émotionnelle des esprits et des fantômes au lieu du sang."},
+    {id:"ne5a", niveau:5, nom:"Forme d'ombre", cout:"2 tests d'Exaltation", jet:"Aucun (Transforme le corps en ombre 2D bidimensionnelle)", description:"Transforme le corps du vampire en une ombre bidimensionnelle capable de glisser sous les portes et le long des murs."},
+    {id:"ne5b", niveau:5, nom:"Châtiment de Skuld", cout:"2 tests d'Exaltation", jet:"Vigueur + Néant en opposition contre Vigueur x 2 / Force d'âme", description:"Déchaîne les forces de l'entropie pour infliger des dégâts aggravés massifs à tout être touché par l'ombre."}
+  ]},
+  occultation: { label:"Occultation", powers:[
+    {id:"oc1a", niveau:1, nom:"Silence de mort", cout:"Gratuit", jet:"Aucun (Effet automatique ; étouffe les sons émises)", description:"Étouffe tous les sons émis par le vampire ou dans sa zone immédiate pour une discrétion totale."},
+    {id:"oc1b", niveau:1, nom:"Manteau d'ombre", cout:"Gratuit", jet:"Aucun (Effet automatique si immobile à l'ombre)", description:"Devient totalement invisible tant qu'il reste immobile dans les zones d'ombre ou de pénombre."},
+    {id:"oc2a", niveau:2, nom:"Passage invisible", cout:"1 test d'Exaltation", jet:"Aucun (Invisibilité en déplacement ; contré par Astuce + Auspex vs Astuce + Occultation)", description:"Permet de se déplacer en restant totalement invisible tant qu'il ne commet pas d'acte violent."},
+    {id:"oc2b", niveau:2, nom:"Chimérie", cout:"1 test d'Exaltation", jet:"Manipulation + Occultation (pour projeter une illusion)", description:"Projette des illusions visuelles et auditives brèves mais convaincantes pour tromper les sens des témoins."},
+    {id:"oc3a", niveau:3, nom:"Masque aux mille visages", cout:"1 test d'Exaltation", jet:"Manipulation + Représentation en opposition contre Astuce + Vigilance", description:"Altera la perception des témoins pour se faire passer pour un inconnu banal et inoubliable."},
+    {id:"oc3b", niveau:3, nom:"Fausse personnalité", cout:"1 test d'Exaltation", jet:"Intelligence + Occultation (Difficulté 1 à 3)", description:"Simule des émotions, pensées et auras totalement fausses pour tromper la télépathie et la détection mystique."},
+    {id:"oc4a", niveau:4, nom:"Disparition", cout:"Coût du pouvoir amélioré", jet:"Astuce + Occultation en opposition contre Astuce + Vigilance", description:"S'efface instantanément de la vue des témoins même en plein combat ou sous une lumière crue."},
+    {id:"oc4b", niveau:4, nom:"Dissimulation", cout:"1 test d'Exaltation", jet:"Intelligence + Occultation (Difficulté 2 à 6 selon taille)", description:"Rend un objet inanimé ou une structure totalement invisible aux yeux des observateurs."},
+    {id:"oc5a", niveau:5, nom:"Imposture", cout:"1 test d'Exaltation", jet:"Astuce + Occultation & Manipulation + Représentation", description:"Copie parfaitement l'apparence, la voix et la gestuelle d'une personne précise pour s'imposturer."},
+    {id:"oc5b", niveau:5, nom:"Masquer l'assemblée", cout:"1 test d'Exaltation supplémentaire", jet:"Idem pouvoir de base (étendu au groupe)", description:"Étend les effets de dissimulation d'Occultation à l'ensemble d'un groupe d'alliés proches."}
+  ]},
+  puissance: { label:"Puissance", powers:[
+    {id:"pu1a", niveau:1, nom:"Corps mortel", cout:"Gratuit", jet:"Aucun (Passif - rend les attaques à mains nues aggravées contre mortels)", description:"Transforme les frappes à mains nues en attaques létales infligeant des dégâts aggravés aux mortels."},
+    {id:"pu1b", niveau:1, nom:"Bond surhumain", cout:"Gratuit", jet:"Aucun (Exécute des sauts prodigieux)", description:"Permet d'exécuter des sauts verticaux ou horizontaux d'une portée prodigieuse sans élan."},
+    {id:"pu2a", niveau:2, nom:"Prouesse", cout:"1 test d'Exaltation", jet:"Aucun (Ajoute le score de Puissance aux dégâts de Mêlée/Bagarre)", description:"Ajoute la valeur de Puissance directement aux dommages infligés lors des attaques en Mêlée et Bagarre."},
+    {id:"pu2b", niveau:2, nom:"Poigne implacable", cout:"1 test d'Exaltation", jet:"Aucun (Ajoute le score de Puissance en réussites auto pour agripper)", description:"Permet d'agripper une cible avec une force colossale rendant l'évasion pratiquement impossible."},
+    {id:"pu3a", niveau:3, nom:"Brutalité", cout:"1 test d'Exaltation", jet:"Manipulation + Puissance en opposition contre Sang-froid + Intelligence", description:"Insuffle une puissance terrifiante dans une attaque à distance pour projeter et renverser la cible."},
+    {id:"pu3b", niveau:3, nom:"Écrasement d'objets", cout:"Gratuit", jet:"Aucun (Multiplie la Puissance par 2 pour détruire des objets inanimés)", description:"Multiplie sa force par deux pour pulvériser des structures inertes, des portes ou des véhicules."},
+    {id:"pu4", niveau:4, nom:"Atterrissage écrasant", cout:"1 test d'Exaltation", jet:"Force + Puissance en opposition contre Dextérité + Athlétisme", description:"Projette le vampire au sol depuis les hauteurs pour créer une onde de choc renversant et blessant les ennemis proches."},
+    {id:"pu5a", niveau:5, nom:"Frappe tellurique", cout:"2 tests d'Exaltation", jet:"Dextérité + Athlétisme (Difficulté 3 pour cibles dans un rayon de 5m)", description:"Frappe le sol avec une force colossale pour déclencher une onde de choc renversant toutes les cibles alentour."},
+    {id:"pu5b", niveau:5, nom:"Maîtrise de la masse", cout:"Gratuit", jet:"Aucun (Tours de force/attaques deviennent des actions mineures)", description:"Manipule la gravité et la masse corporelle pour accomplir des exploits de force surhumains comme des actions mineures."}
+  ]}
 };
 
 const CLANS = {
@@ -1353,7 +1386,7 @@ function renderDisciplines(){
       top.onclick = ()=>{ state.openPowers[p.id] = !state.openPowers[p.id]; render(); };
 
       const detail = document.createElement("div"); detail.className="power-detail";
-      detail.innerHTML = "<b>Coût :</b> "+p.cout+"<br><b>Jet :</b> "+p.jet;
+      detail.innerHTML = "<b>Coût :</b> "+p.cout+(p.description ? "<br><b>Description :</b> "+p.description : "")+"<br><b>Jet :</b> "+p.jet;
       if(p.amalgame){
         const ok = isPowerUnlockedByAmalgame(p);
         detail.innerHTML += "<div class='amalgame-note'>Amalgame : "+DISCIPLINES[p.amalgame.discipline].label+" "+p.amalgame.niveau+(ok?" ✓":" — non rempli !")+"</div>";
