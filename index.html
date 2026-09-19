@@ -365,7 +365,7 @@ textarea{ resize:vertical; }
 .xp-track .field{ flex:1; min-width:140px; margin-bottom:0; }
 .xp-remaining{ font-family:"Cinzel",serif; font-size:22px; color:var(--gold); white-space:nowrap; padding-bottom:2px; }
 
-.relation-map{ position:relative; width:100%; max-width:600px; aspect-ratio:1/1; margin:0 auto; }
+.relation-map{ position:relative; width:100%; max-width:min(94vw, 82vh, 1100px); aspect-ratio:1/1; margin:0 auto; }
 .relation-map svg{ position:absolute; inset:0; width:100%; height:100%; }
 .relation-portrait{
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
@@ -378,6 +378,11 @@ textarea{ resize:vertical; }
   min-width:90px;
 }
 .relation-node .rm{ display:block; background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:12px;margin-top:2px; }
+.relation-node .niveau-badge{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:16px; height:16px; border-radius:50%; background:var(--gold); color:var(--ink);
+  font-size:10px; font-weight:700; margin-right:5px; vertical-align:middle;
+}
 .relation-label{
   position:absolute; transform:translate(-50%,-50%);
   font-size:12.5px; color:var(--gold); background:var(--ink); padding:1px 6px; border-radius:4px; z-index:2;
@@ -676,6 +681,11 @@ textarea{ resize:vertical; }
         <div class="dice-rouse" style="gap:10px; flex-wrap:wrap;">
           <input type="text" id="relationName" placeholder="Nom (ex : Michael Templeton)" style="flex:2 1 160px;background:var(--panel-2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:9px 10px;">
           <input type="text" id="relationRole" placeholder="Fonction (ex : Sire)" style="flex:1 1 120px;background:var(--panel-2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:9px 10px;">
+          <select id="relationNiveau" title="Niveau de relation" style="flex:0 0 auto;background:var(--panel-2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:9px 6px;">
+            <option value="1">1 – Proche</option>
+            <option value="2" selected>2 – Important</option>
+            <option value="3">3 – Connu</option>
+          </select>
           <button class="step-btn" id="relationAdd">+</button>
         </div>
       </div>
@@ -1002,6 +1012,7 @@ function sanitizeState(){
   if(!Array.isArray(state.merits)) state.merits = [];
   if(!Array.isArray(state.ancrages)) state.ancrages = [];
   if(!Array.isArray(state.relations)) state.relations = [];
+  state.relations.forEach(r=>{ if(!r.niveau) r.niveau = 2; });
 }
 function loadState(){
   try{
@@ -1886,13 +1897,15 @@ function renderRelationMap(){
   document.getElementById("relationAdd").onclick = ()=>{
     const nameInput = document.getElementById("relationName");
     const roleInput = document.getElementById("relationRole");
+    const niveauSelect = document.getElementById("relationNiveau");
     if(!nameInput.value.trim()) return;
-    state.relations.push({nom:nameInput.value.trim(), fonction:roleInput.value.trim()});
-    nameInput.value = ""; roleInput.value = "";
+    state.relations.push({nom:nameInput.value.trim(), fonction:roleInput.value.trim(), niveau:parseInt(niveauSelect.value,10)});
+    nameInput.value = ""; roleInput.value = ""; niveauSelect.value = "2";
     render();
   };
 
-  const cx = 300, cy = 300, radius = 220;
+  const cx = 300, cy = 300;
+  const radiusForNiveau = (n)=> n===1 ? 140 : n===3 ? 260 : 200; // 1=proche, 2=important (défaut), 3=connu
 
   // Regroupement par fonction (fonction vide = groupe solo, jamais fusionné)
   const groups = []; // [{key, label, indices:[...]}]
@@ -1921,9 +1934,10 @@ function renderRelationMap(){
     g.indices.forEach((relIdx,i)=>{
       const offset = count>1 ? (i - (count-1)/2) * (spread/Math.max(count-1,1)) : 0;
       const angle = sectorCenter + offset;
+      const r = radiusForNiveau(state.relations[relIdx].niveau);
       positions[relIdx] = {
-        x: cx + radius*Math.cos(angle),
-        y: cy + radius*Math.sin(angle),
+        x: cx + r*Math.cos(angle),
+        y: cy + r*Math.sin(angle),
         angle
       };
     });
@@ -1940,8 +1954,9 @@ function renderRelationMap(){
       cloud.setAttribute("style", "fill:var(--gold); fill-opacity:0.10; stroke:var(--gold-soft); stroke-width:1.5;");
       svg.appendChild(cloud);
 
-      const labelX = cx + (radius+95)*Math.cos(sectorCenter);
-      const labelY = cy + (radius+95)*Math.sin(sectorCenter);
+      const maxGroupRadius = Math.max(...g.indices.map(i=>radiusForNiveau(state.relations[i].niveau)));
+      const labelX = cx + (maxGroupRadius+95)*Math.cos(sectorCenter);
+      const labelY = cy + (maxGroupRadius+95)*Math.sin(sectorCenter);
       const label = document.createElement("div"); label.className="relation-label";
       label.style.left = (labelX/600*100)+"%"; label.style.top = (labelY/600*100)+"%";
       label.style.fontFamily = "'Cinzel',serif";
@@ -1962,7 +1977,7 @@ function renderRelationMap(){
 
     const node = document.createElement("div"); node.className="relation-node";
     node.style.left = (pos.x/600*100)+"%"; node.style.top = (pos.y/600*100)+"%";
-    node.innerHTML = "<span>"+rel.nom+"</span>";
+    node.innerHTML = "<span class='niveau-badge'>"+(rel.niveau||2)+"</span><span>"+rel.nom+"</span>";
     if(state.editMode){
       const rm = document.createElement("button"); rm.className="rm"; rm.textContent="× retirer";
       rm.onclick = ()=>{ state.relations.splice(idx,1); render(); };
