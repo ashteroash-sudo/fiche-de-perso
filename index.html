@@ -418,6 +418,13 @@ textarea{ resize:vertical; }
       <div class="vital-label"><span>Piste de dégâts</span><span class="val" id="hpSummary"></span></div>
       <div class="hp-track" id="hpTrack"></div>
       <div class="impaired-note" id="hpWarning" style="display:none;">⚠ Affaibli — −2 dés sur les jets physiques</div>
+      <div data-editmode-only style="display:none; margin-top:8px;">
+        <div class="stepper">
+          <button class="step-btn" id="hpMaxMinus">−</button>
+          <span class="val" id="hpMaxVal">Max : 7</span>
+          <button class="step-btn" id="hpMaxPlus">+</button>
+        </div>
+      </div>
     </div>
 
     <div class="vcol">
@@ -444,6 +451,13 @@ textarea{ resize:vertical; }
       <div class="impaired-note" id="willWarning" style="display:none;">⚠ Affaibli — −2 dés sur les jets sociaux/mentaux</div>
       <div class="hint" id="willReminder" style="display:none;">
         1 point disponible = relance de 3 dés ordinaires. Sert aussi à résister frénésie / Domination / Présence. Plus de points disponibles = état affaibli (−2 dés social/mental).
+      </div>
+      <div data-editmode-only style="display:none; margin-top:8px;">
+        <div class="stepper">
+          <button class="step-btn" id="willMaxMinus">−</button>
+          <span class="val" id="willMaxVal">Max : 5</span>
+          <button class="step-btn" id="willMaxPlus">+</button>
+        </div>
       </div>
     </div>
 
@@ -1161,6 +1175,13 @@ function renderHP(){
   document.getElementById("hpSummary").textContent = sup+" superf. · "+agg+" aggravé";
   const hpEmpty = state.hp.boxes.filter(s=>s==="empty").length;
   document.getElementById("hpWarning").style.display = hpEmpty===0 ? "inline-block" : "none";
+  document.getElementById("hpMaxVal").textContent = "Max : "+state.hp.boxes.length;
+  document.getElementById("hpMaxMinus").onclick = ()=>{
+    if(state.hp.boxes.length>1){ state.hp.boxes.pop(); state.hp.max = state.hp.boxes.length; render(); }
+  };
+  document.getElementById("hpMaxPlus").onclick = ()=>{
+    if(state.hp.boxes.length<20){ state.hp.boxes.push("empty"); state.hp.max = state.hp.boxes.length; render(); }
+  };
 }
 
 function renderHunger(){
@@ -1220,6 +1241,13 @@ function renderWill(){
   document.getElementById("willInfo").onclick = ()=>{
     const el = document.getElementById("willReminder");
     el.style.display = el.style.display==="none" ? "block" : "none";
+  };
+  document.getElementById("willMaxVal").textContent = "Max : "+state.will.boxes.length;
+  document.getElementById("willMaxMinus").onclick = ()=>{
+    if(state.will.boxes.length>2){ state.will.boxes.pop(); state.will.max = state.will.boxes.length; render(); }
+  };
+  document.getElementById("willMaxPlus").onclick = ()=>{
+    if(state.will.boxes.length<10){ state.will.boxes.push("empty"); state.will.max = state.will.boxes.length; render(); }
   };
 }
 
