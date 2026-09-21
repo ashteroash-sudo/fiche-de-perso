@@ -86,6 +86,28 @@ button{ font-family:inherit; }
 .card h2{ font-size:24px; margin-bottom:14px; }
 .card .hint{ color:var(--text-dim); font-size:15px; margin-top:8px; }
 
+/* ---- frénésie (accordéon) ---- */
+.frenzy-block{ margin-top:16px; border-top:1px solid var(--line); padding-top:14px; }
+.frenzy-block > summary{
+  cursor:pointer; font-family:"Cinzel",serif; font-weight:600; font-size:19px;
+  color:var(--gold); list-style:none; display:flex; align-items:center; gap:8px;
+}
+.frenzy-block > summary::-webkit-details-marker{ display:none; }
+.frenzy-block > summary::before{ content:"▸"; font-size:15px; transition:transform .15s; }
+.frenzy-block[open] > summary::before{ transform:rotate(90deg); }
+.frenzy-block .frenzy-body{ margin-top:12px; display:flex; flex-direction:column; gap:8px; }
+.frenzy-sub{ border:1px solid var(--line); border-radius:8px; padding:8px 12px; background:var(--panel-2); }
+.frenzy-sub > summary{
+  cursor:pointer; font-weight:600; font-size:16px; list-style:none;
+  display:flex; align-items:center; gap:6px;
+}
+.frenzy-sub > summary::-webkit-details-marker{ display:none; }
+.frenzy-sub > summary::before{ content:"▸"; font-size:12px; color:var(--text-dim); transition:transform .15s; }
+.frenzy-sub[open] > summary::before{ transform:rotate(90deg); }
+.frenzy-sub ul{ margin:10px 0 2px; padding-left:20px; font-size:15px; }
+.frenzy-sub ul li{ margin-bottom:6px; }
+.frenzy-sub ul li b{ color:var(--text); }
+
 /* ---- vitals ---- */
 .vital-row{ margin-bottom:18px; }
 .vital-row:last-child{ margin-bottom:0; }
@@ -680,6 +702,52 @@ textarea{ resize:vertical; }
         </div>
         <div class="xp-remaining" id="xpRemaining"></div>
       </div>
+
+      <details class="frenzy-block">
+        <summary>🩸 Frénésie — rappel</summary>
+        <div class="frenzy-body">
+
+          <details class="frenzy-sub">
+            <summary>Déclencheurs</summary>
+            <ul>
+              <li><b>Rage</b> — provocation, humiliation, agression, mort/blessure d'un proche ou d'une Attache.</li>
+              <li><b>Soif</b> — sang vu/senti à Soif 4+, sang goûté à Soif 4+, échec d'Exaltation à Soif 5.</li>
+              <li><b>Terreur (Rötschreck)</b> — danger imminent : feu, soleil, brûlure.</li>
+            </ul>
+          </details>
+
+          <details class="frenzy-sub">
+            <summary>Résister (le jet)</summary>
+            <ul>
+              <li>Volonté + (Humanité ÷ 3, arrondi inf.) — difficulté 2 à 4 selon le Conteur.</li>
+              <li><b>Victoire</b> : résiste, 1 tour à réprimer la Bête (0 si critique).</li>
+              <li><b>Échec</b> : succombe.</li>
+              <li><b>Chevaucher la frénésie</b> : y succomber volontairement, sans jet, pour garder la main sur l'interprétation.</li>
+            </ul>
+          </details>
+
+          <details class="frenzy-sub">
+            <summary>Effets en jeu</summary>
+            <ul>
+              <li>Contrôle rationnel perdu — agit par rage, Soif ou panique.</li>
+              <li>Immunité aux malus de Santé (sauf mutilé).</li>
+              <li>Seules les disciplines physiques restent utilisables (Célérité, Force d'âme, Puissance).</li>
+              <li>+3 dés pour résister aux disciplines mentales (Domination, Présence) — ou +2 à la difficulté de l'attaquant.</li>
+              <li>Immunité aux Compulsions ; pas de 2ᵉ frénésie simultanée.</li>
+              <li>1 point de Volonté = diriger les actions 1 tour (mais pas de relance de dés via Volonté).</li>
+            </ul>
+          </details>
+
+          <details class="frenzy-sub">
+            <summary>Fin de la frénésie</summary>
+            <ul>
+              <li>But atteint : cible détruite, Soif ramenée à 1 ou moins, danger fui.</li>
+              <li>Ou fin de la scène.</li>
+            </ul>
+          </details>
+
+        </div>
+      </details>
     </div>
 
     <div class="card">
