@@ -307,6 +307,9 @@ label.field-label{ display:block; font-size:15px; color:var(--text-dim); margin-
 }
 #poolModVal{ font-size:13px; color:var(--text-dim); min-width:24px; text-align:center; }
 .pool-mod-hint{ font-size:12.5px; color:var(--text-dim); }
+.dice-diff{ margin-top:2px; }
+.dice-diff-lbl{ font-size:13px; color:var(--text-dim); margin-right:2px; }
+#diffVal{ font-size:15px; font-weight:600; min-width:20px; text-align:center; }
 .rouse-die-area{ display:flex; align-items:center; gap:8px; min-height:38px; }
 .rouse-die-label{ font-size:13px; font-weight:600; }
 .rouse-die-label.fail{ color:#c0392b; }
@@ -532,6 +535,12 @@ textarea{ resize:vertical; }
           <div class="dice-chips" id="diceChips"></div>
           <div class="dice-breakdown" id="diceResult"></div>
           <div class="pool-mod-hint">⚠️ Vérifiez vos atouts/handicaps — ajustez manuellement avec +/- si besoin</div>
+          <div class="pool-mod dice-diff">
+            <span class="dice-diff-lbl">Difficulté</span>
+            <button class="pool-mod-btn" id="diffMinus">−</button>
+            <span id="diffVal">1</span>
+            <button class="pool-mod-btn" id="diffPlus">+</button>
+          </div>
           <label class="dice-rouse">
             <input type="checkbox" id="rouseCheck">
             <span id="rouseLabel">Ajouter un dé via l'Exaltation ?</span>
@@ -1063,6 +1072,7 @@ let state = {
   rouseNote:false,
   bloodPotency:2, // défini sur l'onglet 2 (Personnage), utilisé par le calculateur de dés
   poolModifier:0, // ajustement manuel (+/-) pour atouts/handicaps non automatisés
+  difficulty:1,   // Difficulté du jet (nombre de succès à atteindre), fixée par le MJ
   traitValues:{},
   currentTab:"1",
   charName:"",
@@ -1087,6 +1097,7 @@ function sanitizeState(){
   if(!state.will || !Array.isArray(state.will.boxes)) state.will = {max:5, boxes:Array(5).fill("empty")};
   if(typeof state.humanity !== "number") state.humanity = 7;
   if(typeof state.poolModifier !== "number") state.poolModifier = 0;
+  if(typeof state.difficulty !== "number" || state.difficulty < 1) state.difficulty = 1;
   if(!state.stains || typeof state.stains !== "object") state.stains = {};
   if(!state.acquired || typeof state.acquired !== "object") state.acquired = {};
   if(!state.disciplinePoints || typeof state.disciplinePoints !== "object") state.disciplinePoints = {};
@@ -1475,10 +1486,18 @@ function renderAttrsSkills(){
   });
 }
 
+/* Coup de sang (Exaltation) : dés bonus selon la Puissance du sang
+   (tableau corrigé, V5 Companion / Players Guide p. 248) :
+   PdS 0 → +1, 1-2 → +2, 3-4 → +3, 5-6 → +4, 7-8 → +5, 9-10 → +6 */
+function bloodSurgeBonus(bp){
+  const b = Math.max(0, Math.min(10, bp||0));
+  return b===0 ? 1 : Math.floor((b+1)/2) + 1;
+}
+
 function computeDicePool(){
   const entries = Object.entries(state.selectedTraits);
   let pool = entries.reduce((s,[,v])=>s+v, 0);
-  if(state.rouseNote) pool += state.bloodPotency;
+  if(state.rouseNote) pool += bloodSurgeBonus(state.bloodPotency);
   pool = Math.max(0, pool + (state.poolModifier||0));
   const hungerDice = Math.min(state.hunger, pool);
   const normalDice = pool - hungerDice;
@@ -1529,7 +1548,7 @@ function renderDiceCalc(){
   });
 
   const rouseLabel = document.getElementById("rouseLabel");
-  rouseLabel.textContent = "Ajouter des dés via l'Exaltation ? (+"+state.bloodPotency+", Puissance du sang)";
+  rouseLabel.textContent = "Ajouter des dés via l'Exaltation ? (+"+bloodSurgeBonus(state.bloodPotency)+", Puissance du sang "+state.bloodPotency+")";
 
   if(entries.length===0){
     chipsWrap.innerHTML = "<span class='dice-empty'>Touche un attribut puis une compétence…</span>";
@@ -1538,13 +1557,13 @@ function renderDiceCalc(){
     rollBtn.disabled = true;
   } else {
     poolNumEl.textContent = pool;
-    let html = normalDice+" normal"+(normalDice>1?"aux":"")+" ";
+    let html = normalDice+(normalDice>1?" normaux":" normal")+" ";
     for(let i=0;i<normalDice;i++) html += "<span class='pool-die'></span>";
     if(hungerDice>0){
       html += " + "+hungerDice+" de Soif ";
       for(let i=0;i<hungerDice;i++) html += "<span class='hunger-die'>S</span>";
     }
-    if(state.rouseNote) html += " <span style='color:var(--text-dim)'>(dont +"+state.bloodPotency+" par Exaltation)</span>";
+    if(state.rouseNote) html += " <span style='color:var(--text-dim)'>(dont +"+bloodSurgeBonus(state.bloodPotency)+" par Exaltation)</span>";
     resultEl.innerHTML = html;
     rollBtn.disabled = false;
   }
@@ -1552,6 +1571,10 @@ function renderDiceCalc(){
   document.getElementById("poolModVal").textContent = (state.poolModifier>0?"+":"")+state.poolModifier;
   document.getElementById("poolModMinus").onclick = ()=>{ state.poolModifier -= 1; render(); };
   document.getElementById("poolModPlus").onclick = ()=>{ state.poolModifier += 1; render(); };
+
+  document.getElementById("diffVal").textContent = state.difficulty;
+  document.getElementById("diffMinus").onclick = ()=>{ state.difficulty = Math.max(1, state.difficulty-1); render(); };
+  document.getElementById("diffPlus").onclick = ()=>{ state.difficulty = Math.min(10, state.difficulty+1); render(); };
 
   document.getElementById("rouseCheck").checked = !!state.rouseNote;
   document.getElementById("rouseCheck").onchange = (e)=>{
@@ -1640,15 +1663,21 @@ function finishRoll(values, normalDice, hungerDice, resultLine){
   const count69 = values.filter(v=>v>=6 && v<=9).length;
   const pairs = Math.floor(count10/2);
   let successes = count69 + count10 + pairs*2;
-  const isCritical = pairs>=1;
+  const difficulty = state.difficulty || 1;
+  const isWin = successes >= difficulty;
+  // Règles V5 : critique et réussite sale n'existent que sur un jet réussi ;
+  // l'échec bestial survient sur TOUT jet raté (sous la Difficulté) avec un 1 sur un dé de Soif.
+  const isCritical = isWin && pairs>=1;
   const isMessy = isCritical && hungerValues.includes(10);
-  const isBestial = successes===0 && hungerValues.includes(1);
+  const isBestial = !isWin && hungerValues.includes(1);
+  const score = successes+" succès / Diff. "+difficulty;
+  const marge = successes - difficulty;
 
   let text, cls;
-  if(isBestial){ text = "0 succès — Échec Bestial !"; cls = "bestial"; }
-  else if(successes===0){ text = "Échec"; cls = "fail"; }
-  else if(isCritical){ text = successes+" succès — Critique"+(isMessy ? " (Réussite Sale)" : " !"); cls = "crit"; }
-  else { text = successes+" succès"; cls = ""; }
+  if(isBestial){ text = score+" — Échec Bestial !"; cls = "bestial"; }
+  else if(!isWin){ text = score+" — Échec"+(successes===0 ? " total" : ""); cls = "fail"; }
+  else if(isCritical){ text = score+" — Critique"+(isMessy ? " (Réussite Sale)" : " !")+" Marge "+marge; cls = "crit"; }
+  else { text = score+" — Réussite, marge "+marge; cls = ""; }
   resultLine.textContent = text;
   resultLine.className = "dice-roll-result" + (cls ? " "+cls : "");
 }
